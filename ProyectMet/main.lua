@@ -1,4 +1,5 @@
 zombie = require "zombie"
+Menu = require "menu"
 
 
 function love.load()
@@ -41,13 +42,13 @@ function love.update(dt)
         if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and jugador.x < love.graphics.getWidth() then
             jugador.x = jugador.x + jugador.velocidad*dt
         end
-        if love.keyboard.isDown("a") or love.keyboard.isDown("left"))  and jugador.x > 0 then
+        if (love.keyboard.isDown("a") or love.keyboard.isDown("left"))  and jugador.x > 0 then
             jugador.x = jugador.x - jugador.velocidad*dt
         end
-        if love.keyboard.isDown("w") or love.keyboard.isDown("up"))  and jugador.y > 0 then
+        if (love.keyboard.isDown("w") or love.keyboard.isDown("up"))  and jugador.y > 0 then
             jugador.y = jugador.y - jugador.velocidad*dt
         end
-        if love.keyboard.isDown("s") or love.keyboard.isDown("down"))  and jugador.y < love.graphics.getHeight() then
+        if (love.keyboard.isDown("s") or love.keyboard.isDown("down"))  and jugador.y < love.graphics.getHeight() then
             jugador.y = jugador.y + jugador.velocidad*dt
         end
     end
