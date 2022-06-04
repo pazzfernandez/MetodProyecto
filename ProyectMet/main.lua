@@ -1,3 +1,6 @@
+zombie = require "zombie"
+
+
 function love.load()
     math.randomseed(os.time())
 	
@@ -35,16 +38,16 @@ function love.update(dt)
 	--Tomar el input del usuario sobre la direccion 
 	--SOLO si el juego YA HA COMENZADO
     if estadoDelJuego == 2 then
-        if love.keyboard.isDown("d") and jugador.x < love.graphics.getWidth() then
+        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and jugador.x < love.graphics.getWidth() then
             jugador.x = jugador.x + jugador.velocidad*dt
         end
-        if love.keyboard.isDown("a") and jugador.x > 0 then
+        if love.keyboard.isDown("a") or love.keyboard.isDown("left"))  and jugador.x > 0 then
             jugador.x = jugador.x - jugador.velocidad*dt
         end
-        if love.keyboard.isDown("w") and jugador.y > 0 then
+        if love.keyboard.isDown("w") or love.keyboard.isDown("up"))  and jugador.y > 0 then
             jugador.y = jugador.y - jugador.velocidad*dt
         end
-        if love.keyboard.isDown("s") and jugador.y < love.graphics.getHeight() then
+        if love.keyboard.isDown("s") or love.keyboard.isDown("down"))  and jugador.y < love.graphics.getHeight() then
             jugador.y = jugador.y + jugador.velocidad*dt
         end
     end
@@ -167,42 +170,6 @@ function love.mousepressed( x, y, boton )
     end
 end
 
---Funcion para sacar el angulo al que deberia ver el jugador
-function jugadorAnguloMouse()
-    return math.atan2( jugador.y - love.mouse.getY(), jugador.x - love.mouse.getX() ) + math.pi
-end
-
---Angulo del zombie para llegar al jugador
-function zombieJugadorAngulo(enemigo)
-    return math.atan2( jugador.y - enemigo.y, jugador.x - enemigo.x )
-end
-
---Funcion para crear un zombie
-function crearZombie()
-    local zombie = {}
-    zombie.x = 0
-    zombie.y = 0
-    zombie.velocidad = 140
-    zombie.muerto = false
-	
-	--Aleatoriamente los coloca en uno de los lados de la pantalla
-    local lado = math.random(1, 4)
-    if lado == 1 then
-        zombie.x = -30
-        zombie.y = math.random(0, love.graphics.getHeight())
-    elseif lado == 2 then
-        zombie.x = love.graphics.getWidth() + 30
-        zombie.y = math.random(0, love.graphics.getHeight())
-    elseif lado == 3 then
-        zombie.x = math.random(0, love.graphics.getWidth())
-        zombie.y = -30
-    elseif lado == 4 then
-        zombie.x = math.random(0, love.graphics.getWidth())
-        zombie.y = love.graphics.getHeight() + 30
-    end
-
-    table.insert(zombies, zombie)
-end
 
 --Funcion para crear una bala
 function crearBala()
