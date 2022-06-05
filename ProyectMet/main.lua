@@ -22,7 +22,9 @@ function love.load()
 	
 	--Obtener la fuente en la que van a estar
 	--las letras que aparezcan en pantalla
-   love.graphics.setNewFont("04b_30/04b_30__.TTF", 40)
+   love.graphics.setNewFont("04b_30/04b_30__.TTF", 80)
+   
+   musicaIntro = love.audio.newSource("musica/Origami Repetika - Quare Frolic.mp3", "stream")
 	
 	--Cargar tables de zombies y de las balas
     zombies = {}
@@ -40,7 +42,10 @@ function love.load()
       menu:añadirItem{
       nombre = 'Jugar',
       accion = function()
-
+        estadoDelJuego = 2
+        tiempoMax = 2
+        temporizador = tiempoMax
+        puntaje = 0
       end
     }
     menu:añadirItem{
@@ -153,12 +158,22 @@ function love.draw()
 	--Dibuja el fondo
     love.graphics.draw(sprites.fondo, 0, 0)
 	
+    --Sacar el tamaño de la ventana
+    local anchoVentana = love.graphics.getWidth()
+    local altoVentana = love.graphics.getHeight()
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
-        menu:dibujar(400, 400)
+        menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
+        
+        --Musica para el menu principal
+        love.audio.play(musicaIntro)
+        if not musicaIntro:isPlaying( ) then
+          love.audio.play(musicaIntro)
+        end
 		
     elseif estadoDelJuego == 2 then
 	--Dibuja el puntaje en pantalla
+    love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
     love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
 	
 	--Dibuja al jugador en la pantalla
@@ -187,11 +202,6 @@ end
 function love.mousepressed( x, y, boton )
     if boton == 1 and estadoDelJuego == 2 then
         crearBala()
-    else
-      estadoDelJuego = 2
-        tiempoMax = 2
-        temporizador = tiempoMax
-        puntaje = 0
     
     end
 end
