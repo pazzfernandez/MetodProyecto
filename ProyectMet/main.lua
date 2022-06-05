@@ -4,6 +4,8 @@ Menu = require "menu"
 
 function love.load()
     math.randomseed(os.time())
+    
+
 	
 	--Cargar los assets a utilizar
     sprites = {}
@@ -20,8 +22,7 @@ function love.load()
 	
 	--Obtener la fuente en la que van a estar
 	--las letras que aparezcan en pantalla
-    miFuente = love.graphics.newFont(30)
-	
+   love.graphics.setNewFont("04b_30/04b_30__.TTF", 40)
 	
 	--Cargar tables de zombies y de las balas
     zombies = {}
@@ -32,6 +33,23 @@ function love.load()
     puntaje = 0
     tiempoMax = 2
     temporizador = tiempoMax
+    
+    
+    if estadoDelJuego == 1 then
+      menu = Menu.new()
+      menu:añadirItem{
+      nombre = 'Jugar',
+      accion = function()
+
+      end
+    }
+    menu:añadirItem{
+      nombre = 'Salir',
+      accion = function()
+        love.event.quit(0)
+      end
+    }
+    end
 end
 
 function love.update(dt)
@@ -51,7 +69,13 @@ function love.update(dt)
         if (love.keyboard.isDown("s") or love.keyboard.isDown("down"))  and jugador.y < love.graphics.getHeight() then
             jugador.y = jugador.y + jugador.velocidad*dt
         end
+        
+    elseif estadoDelJuego == 1 then
+      menu:actualizar(dt)
+      
     end
+
+
 	
 	--itera sobre la tabla de zombies y el movimiento que deben hacer respecto a la posicion del jugador
     for i,z in ipairs(zombies) do
@@ -123,7 +147,7 @@ function love.update(dt)
             temporizador = tiempoMax
         end
     end
-end
+
 
 function love.draw()
 	--Dibuja el fondo
@@ -131,10 +155,9 @@ function love.draw()
 	
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
-        love.graphics.setFont(miFuente)
-		--Texto sobre como comenzar a jugar
-        love.graphics.printf("Clickee en cualquier lado para comenzar!", 0, 50, love.graphics.getWidth(), "center")
-    end
+        menu:dibujar(400, 400)
+		
+    elseif estadoDelJuego == 2 then
 	--Dibuja el puntaje en pantalla
     love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
 	
@@ -150,6 +173,7 @@ function love.draw()
     for i,b in ipairs(balas) do
         love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
     end
+    end
 end
 
 --Funcion para crear zombies una vez se comience el juego apretando el espacio
@@ -163,14 +187,19 @@ end
 function love.mousepressed( x, y, boton )
     if boton == 1 and estadoDelJuego == 2 then
         crearBala()
-    elseif boton == 1 and estadoDelJuego == 1 then
-        estadoDelJuego = 2
+    else
+      estadoDelJuego = 2
         tiempoMax = 2
         temporizador = tiempoMax
         puntaje = 0
+    
     end
 end
 
+function love.keypressed(key)
+	menu:keypressed(key)
+
+end
 
 --Funcion para crear una bala
 function crearBala()
@@ -186,4 +215,5 @@ end
 --Funcion para calcular la distancia entre dos coordenadas en la pantalla
 function distanciaEntre(x1, y1, x2, y2)
     return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
+end
 end

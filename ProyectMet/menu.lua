@@ -17,20 +17,20 @@ return {
 			end,
       --Dibuja el item en las coordenadas pasadas
 			dibujar = function(self, x, y)
-				local altura = 20
+				local altura = 60
 				local ancho = 300
 				
         --Pone el color de los items
-				love.graphics.setColor(255, 255, 255, 128)
+				love.graphics.setColor(0.4, 0.4, 0.4, 0.3)
         --Crea los rectangulos
 				love.graphics.rectangle('fill', x, y + altura*(self.seleccionado-1) + (self.animacFuera * altura), ancho, altura)
 				
         --Cambia los colores si el item es seleccionado
 				for i, item in ipairs(self.items) do
 					if self.seleccionado == i then
-						love.graphics.setColor(255, 255, 255)
+						love.graphics.setColor(1, 1, 1)
 					else
-						love.graphics.setColor(255, 255, 255, 128)
+						love.graphics.setColor(1, 1, 1)
 					end
           --Dibuja el texto que debe ir en el item
 					love.graphics.print(item.nombre, x + 5, y + altura*(i-1) + 5)
