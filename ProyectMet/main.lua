@@ -24,7 +24,10 @@ function love.load()
 	--las letras que aparezcan en pantalla
    love.graphics.setNewFont("04b_30/04b_30__.TTF", 80)
    
-   musicaIntro = love.audio.newSource("musica/Origami Repetika - Quare Frolic.mp3", "stream")
+   --Craga la musica y los efectos de sonido 
+    musicaIntro = love.audio.newSource("musica/Origami Repetika - Quare Frolic.mp3", "stream")
+    musicaJuego = love.audio.newSource("musica/Rolemusic - Pokimonkey.mp3", "stream")
+    sonidoPerder = love.audio.newSource("musica/gameOverEffect.wav", "static")
 	
 	--Cargar tables de zombies y de las balas
     zombies = {}
@@ -90,6 +93,17 @@ function love.update(dt)
 		
 		--Reinicia el juego si un zombie toca al jugador
         if distanciaEntre(z.x, z.y, jugador.x, jugador.y) < 30 then
+          
+          --parar la musica del juego
+          if musicaJuego:isPlaying() then
+            love.audio.stop(musicaJuego)
+          end
+          --Poner el sonido de haber perdido
+          love.audio.play(sonidoPerder)
+          --Dormir al programa por 1 seg mientras suena el efecto
+          love.timer.sleep(1)
+          
+          --Destruye todos los objetos zombie
             for i,z in ipairs(zombies) do
                 zombies[i] = nil
                 estadoDelJuego = 1
@@ -163,8 +177,13 @@ function love.draw()
     local altoVentana = love.graphics.getHeight()
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
+      love.graphics.setNewFont("04b_30/04b_30__.TTF", 80)
         menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
         
+        if musicaJuego:isPlaying() then
+          love.audio.stop(musicaJuego)
+        end
+    
         --Musica para el menu principal
         love.audio.play(musicaIntro)
         if not musicaIntro:isPlaying( ) then
@@ -188,6 +207,17 @@ function love.draw()
     for i,b in ipairs(balas) do
         love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
     end
+    
+    --Para la musica de la introduccion si esta sonando
+    if musicaIntro:isPlaying() then
+      love.audio.stop(musicaIntro)
+    end
+    
+    --Musica dentro del juego
+    love.audio.play(musicaJuego)
+        if not musicaJuego:isPlaying( ) then
+          love.audio.play(musicaJuego)
+        end
     end
 end
 
@@ -198,7 +228,7 @@ function love.keypressed( tecla )
     end
 end
 
---Funcuion para comenzar el juego o disparar si ya ha comenzado
+--Funcion para disparar si ya ha comenzado
 function love.mousepressed( x, y, boton )
     if boton == 1 and estadoDelJuego == 2 then
         crearBala()
