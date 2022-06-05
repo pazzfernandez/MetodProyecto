@@ -23,6 +23,8 @@ function love.load()
 	--Obtener la fuente en la que van a estar
 	--las letras que aparezcan en pantalla
    love.graphics.setNewFont("04b_30/04b_30__.TTF", 80)
+   
+   musicaIntro = love.audio.newSource("musica/Origami Repetika - Quare Frolic.mp3", "stream")
 	
 	--Cargar tables de zombies y de las balas
     zombies = {}
@@ -162,6 +164,12 @@ function love.draw()
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
         menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
+        
+        --Musica para el menu principal
+        love.audio.play(musicaIntro)
+        if not musicaIntro:isPlaying( ) then
+          love.audio.play(musicaIntro)
+        end
 		
     elseif estadoDelJuego == 2 then
 	--Dibuja el puntaje en pantalla
