@@ -10,6 +10,7 @@ function love.load()
 	--Cargar los assets a utilizar
     sprites = {}
     sprites.fondo = love.graphics.newImage('sprites/fondo.png')
+    sprites.fondoMenu = love.graphics.newImage('sprites/fondoMenu.png')
     sprites.bala = love.graphics.newImage('sprites/bala.png')
     sprites.jugador = love.graphics.newImage('sprites/jugador.png')
     sprites.zombie = love.graphics.newImage('sprites/zombie.png')
@@ -180,11 +181,13 @@ function love.draw()
     local altoVentana = love.graphics.getHeight()
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
+      love.graphics.draw(sprites.fondoMenu, 0, 0)
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 70)
         menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
         
-        love.graphics.setNewFont("llpixel/LLPIXEL3.TTF", 90)
-        love.graphics.printf("Nombre del juego", 0, love.graphics.getHeight()-550, love.graphics.getWidth(), "center")
+        --love.graphics.setNewFont("llpixel/LLPIXEL3.TTF", 90)
+        love.graphics.setNewFont("pixelmania/Pixelmania.TTF", 45)
+        love.graphics.printf("MATASUEGRAS", 0, love.graphics.getHeight()-525, love.graphics.getWidth(), "center")
         
         if musicaJuego:isPlaying() then
           love.audio.stop(musicaJuego)
