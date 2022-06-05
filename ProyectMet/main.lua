@@ -28,6 +28,9 @@ function love.load()
     musicaIntro = love.audio.newSource("musica/Origami Repetika - Quare Frolic.mp3", "stream")
     musicaJuego = love.audio.newSource("musica/Rolemusic - Pokimonkey.mp3", "stream")
     sonidoPerder = love.audio.newSource("musica/gameOverEffect.wav", "static")
+    sonidoEfectoDisparo = love.audio.newSource("musica/firingEffect.wav", "static")
+    
+    musicaJuego:setVolume(0.6)
 	
 	--Cargar tables de zombies y de las balas
     zombies = {}
@@ -177,8 +180,11 @@ function love.draw()
     local altoVentana = love.graphics.getHeight()
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
-      love.graphics.setNewFont("04b_30/04b_30__.TTF", 80)
+      love.graphics.setNewFont("04b_30/04b_30__.TTF", 70)
         menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
+        
+        love.graphics.setNewFont("llpixel/LLPIXEL3.TTF", 90)
+        love.graphics.printf("Nombre del juego", 0, love.graphics.getHeight()-550, love.graphics.getWidth(), "center")
         
         if musicaJuego:isPlaying() then
           love.audio.stop(musicaJuego)
@@ -232,6 +238,7 @@ end
 function love.mousepressed( x, y, boton )
     if boton == 1 and estadoDelJuego == 2 then
         crearBala()
+        love.audio.play( sonidoEfectoDisparo )
     
     end
 end
