@@ -5,6 +5,8 @@ Menu = require "menu"
 function love.load()
     math.randomseed(os.time())
     
+    require("importar")
+    importar()
 
 	
 	--Cargar los assets a utilizar
