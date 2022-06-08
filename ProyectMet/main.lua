@@ -5,14 +5,20 @@ Menu = require "menu"
 function love.load()
     math.randomseed(os.time())
     
+    
+    --Crea una tabla con todos los dibujos de los corazones
+    dibujos = {}
 
+    table.insert(dibujos, love.graphics.newImage("sprites/heart3.png"))
+    table.insert(dibujos, love.graphics.newImage("sprites/heart2.png"))
+    table.insert(dibujos, love.graphics.newImage("sprites/heart1.png"))
 	
 	--Cargar los assets a utilizar
     sprites = {}
     sprites.fondo = love.graphics.newImage('sprites/fondo.png')
     sprites.fondoMenu = love.graphics.newImage('sprites/fondoMenu.png')
     sprites.bala = love.graphics.newImage('sprites/bala.png')
-    sprites.jugador = love.graphics.newImage('sprites/jugador.png')
+    sprites.jugador = love.graphics.newImage('sprites/jugador_1.png')
     sprites.zombie = love.graphics.newImage('sprites/zombie.png')
 	
 	--Obtener los atributos del jugador
@@ -53,6 +59,9 @@ function love.load()
         tiempoMax = 2
         temporizador = tiempoMax
         puntaje = 0
+        
+         --Variable de vidas del jugador
+        corazones = 3
       end
     }
     menu:añadirItem{
@@ -82,6 +91,8 @@ function love.update(dt)
             jugador.y = jugador.y + jugador.velocidad*dt
         end
         
+    
+        
     elseif estadoDelJuego == 1 then
       menu:actualizar(dt)
       
@@ -98,23 +109,30 @@ function love.update(dt)
 		--Reinicia el juego si un zombie toca al jugador
         if distanciaEntre(z.x, z.y, jugador.x, jugador.y) < 30 then
           
-          --parar la musica del juego
-          if musicaJuego:isPlaying() then
-            love.audio.stop(musicaJuego)
-          end
-          --Poner el sonido de haber perdido
-          love.audio.play(sonidoPerder)
-          --Dormir al programa por 1 seg mientras suena el efecto
-          love.timer.sleep(1)
-          
-          --Destruye todos los objetos zombie
-            for i,z in ipairs(zombies) do
-                zombies[i] = nil
-                estadoDelJuego = 1
-				--Coloca al jugador de nuevo al centro
-                jugador.x = love.graphics.getWidth()/2
-                jugador.y = love.graphics.getHeight()/2
+          --Si los corazones son mas de uno
+          if corazones > 1 then
+            --Se elimina uno
+            corazones = corazones - 1
+          else
+            --parar la musica del juego
+            if musicaJuego:isPlaying() then
+              love.audio.stop(musicaJuego)
             end
+            --Pone sonido de perder
+            love.audio.play( sonidoPerder )
+            --Dormir al programa por 1 seg mientras suena el efecto
+            love.timer.sleep(1)
+            estadoDelJuego = 1
+            
+              --Destruye todos los objetos zombie
+              for i,z in ipairs(zombies) do
+                  zombies[i] = nil
+                  estadoDelJuego = 1
+          --Coloca al jugador de nuevo al centro
+                  jugador.x = love.graphics.getWidth()/2
+                  jugador.y = love.graphics.getHeight()/2
+              end
+          end
         end
     end
 	
@@ -215,6 +233,11 @@ function love.draw()
 	--Dibuja las balas
     for i,b in ipairs(balas) do
         love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
+    end
+    
+    --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
+    if corazones ~=0 then
+      love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
     end
     
     --Para la musica de la introduccion si esta sonando
