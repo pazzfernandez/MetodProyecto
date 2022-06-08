@@ -1,6 +1,6 @@
 zombie = require "zombie"
 Menu = require "menu"
-
+Object = require "librerias/classic/classic"
 
 function love.load()
     math.randomseed(os.time())
