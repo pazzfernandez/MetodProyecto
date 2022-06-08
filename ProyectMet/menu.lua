@@ -17,8 +17,8 @@ return {
 			end,
       --Dibuja el item en las coordenadas pasadas
 			dibujar = function(self, x, y)
-				local altura = 60
-				local ancho = 300
+				local altura = 100
+				local ancho = 350
 				
         --Pone el color de los items
 				love.graphics.setColor(0.4, 0.4, 0.4, 0.3)

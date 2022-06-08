@@ -5,13 +5,20 @@ Menu = require "menu"
 function love.load()
     math.randomseed(os.time())
     
+    
+    --Crea una tabla con todos los dibujos de los corazones
+    dibujos = {}
 
+    table.insert(dibujos, love.graphics.newImage("sprites/heart3.png"))
+    table.insert(dibujos, love.graphics.newImage("sprites/heart2.png"))
+    table.insert(dibujos, love.graphics.newImage("sprites/heart1.png"))
 	
 	--Cargar los assets a utilizar
     sprites = {}
     sprites.fondo = love.graphics.newImage('sprites/fondo.png')
+    sprites.fondoMenu = love.graphics.newImage('sprites/fondoMenu.png')
     sprites.bala = love.graphics.newImage('sprites/bala.png')
-    sprites.jugador = love.graphics.newImage('sprites/jugador.png')
+    sprites.jugador = love.graphics.newImage('sprites/jugador_1.png')
     sprites.zombie = love.graphics.newImage('sprites/zombie.png')
 	
 	--Obtener los atributos del jugador
@@ -22,7 +29,15 @@ function love.load()
 	
 	--Obtener la fuente en la que van a estar
 	--las letras que aparezcan en pantalla
-   love.graphics.setNewFont("04b_30/04b_30__.TTF", 40)
+   love.graphics.setNewFont("04b_30/04b_30__.TTF", 80)
+   
+   --Craga la musica y los efectos de sonido 
+    musicaIntro = love.audio.newSource("musica/Origami Repetika - Quare Frolic.mp3", "stream")
+    musicaJuego = love.audio.newSource("musica/Rolemusic - Pokimonkey.mp3", "stream")
+    sonidoPerder = love.audio.newSource("musica/gameOverEffect.wav", "static")
+    sonidoEfectoDisparo = love.audio.newSource("musica/firingEffect.wav", "static")
+    
+    musicaJuego:setVolume(0.6)
 	
 	--Cargar tables de zombies y de las balas
     zombies = {}
@@ -40,7 +55,13 @@ function love.load()
       menu:añadirItem{
       nombre = 'Jugar',
       accion = function()
-
+        estadoDelJuego = 2
+        tiempoMax = 2
+        temporizador = tiempoMax
+        puntaje = 0
+        
+         --Variable de vidas del jugador
+        corazones = 3
       end
     }
     menu:añadirItem{
@@ -70,6 +91,8 @@ function love.update(dt)
             jugador.y = jugador.y + jugador.velocidad*dt
         end
         
+    
+        
     elseif estadoDelJuego == 1 then
       menu:actualizar(dt)
       
@@ -85,13 +108,35 @@ function love.update(dt)
 		
 		--Reinicia el juego si un zombie toca al jugador
         if distanciaEntre(z.x, z.y, jugador.x, jugador.y) < 30 then
-            for i,z in ipairs(zombies) do
-                zombies[i] = nil
-                estadoDelJuego = 1
-				--Coloca al jugador de nuevo al centro
-                jugador.x = love.graphics.getWidth()/2
-                jugador.y = love.graphics.getHeight()/2
+          
+          --Si los corazones son mas de uno
+          if corazones > 1 then
+            --Se elimina uno
+            corazones = corazones - 1
+            
+            --Elimina al enemigo para que no se sigan sacando vidas
+            z.muerto = true
+          else
+            --parar la musica del juego
+            if musicaJuego:isPlaying() then
+              love.audio.stop(musicaJuego)
             end
+            --Pone sonido de perder
+            love.audio.play( sonidoPerder )
+            
+            --Dormir al programa por 1 seg mientras suena el efecto
+            love.timer.sleep(1)
+            estadoDelJuego = 1
+            
+              --Destruye todos los objetos zombie
+              for i,z in ipairs(zombies) do
+                  zombies[i] = nil
+                  estadoDelJuego = 1
+          --Coloca al jugador de nuevo al centro
+                  jugador.x = love.graphics.getWidth()/2
+                  jugador.y = love.graphics.getHeight()/2
+              end
+          end
         end
     end
 	
@@ -153,12 +198,32 @@ function love.draw()
 	--Dibuja el fondo
     love.graphics.draw(sprites.fondo, 0, 0)
 	
+    --Sacar el tamaño de la ventana
+    local anchoVentana = love.graphics.getWidth()
+    local altoVentana = love.graphics.getHeight()
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
-        menu:dibujar(400, 400)
+      love.graphics.draw(sprites.fondoMenu, 0, 0)
+      love.graphics.setNewFont("04b_30/04b_30__.TTF", 70)
+        menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
+        
+        --love.graphics.setNewFont("llpixel/LLPIXEL3.TTF", 90)
+        love.graphics.setNewFont("pixelmania/Pixelmania.TTF", 45)
+        love.graphics.printf("MATASUEGRAS", 0, love.graphics.getHeight()-525, love.graphics.getWidth(), "center")
+        
+        if musicaJuego:isPlaying() then
+          love.audio.stop(musicaJuego)
+        end
+    
+        --Musica para el menu principal
+        love.audio.play(musicaIntro)
+        if not musicaIntro:isPlaying( ) then
+          love.audio.play(musicaIntro)
+        end
 		
     elseif estadoDelJuego == 2 then
 	--Dibuja el puntaje en pantalla
+    love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
     love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
 	
 	--Dibuja al jugador en la pantalla
@@ -173,6 +238,22 @@ function love.draw()
     for i,b in ipairs(balas) do
         love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
     end
+    
+    --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
+    if corazones ~=0 then
+      love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
+    end
+    
+    --Para la musica de la introduccion si esta sonando
+    if musicaIntro:isPlaying() then
+      love.audio.stop(musicaIntro)
+    end
+    
+    --Musica dentro del juego
+    love.audio.play(musicaJuego)
+        if not musicaJuego:isPlaying( ) then
+          love.audio.play(musicaJuego)
+        end
     end
 end
 
@@ -183,15 +264,11 @@ function love.keypressed( tecla )
     end
 end
 
---Funcuion para comenzar el juego o disparar si ya ha comenzado
+--Funcion para disparar si ya ha comenzado
 function love.mousepressed( x, y, boton )
     if boton == 1 and estadoDelJuego == 2 then
         crearBala()
-    else
-      estadoDelJuego = 2
-        tiempoMax = 2
-        temporizador = tiempoMax
-        puntaje = 0
+        love.audio.play( sonidoEfectoDisparo )
     
     end
 end
