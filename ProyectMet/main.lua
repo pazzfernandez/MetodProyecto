@@ -113,6 +113,9 @@ function love.update(dt)
           if corazones > 1 then
             --Se elimina uno
             corazones = corazones - 1
+            
+            --Elimina al enemigo para que no se sigan sacando vidas
+            z.muerto = true
           else
             --parar la musica del juego
             if musicaJuego:isPlaying() then
@@ -120,6 +123,7 @@ function love.update(dt)
             end
             --Pone sonido de perder
             love.audio.play( sonidoPerder )
+            
             --Dormir al programa por 1 seg mientras suena el efecto
             love.timer.sleep(1)
             estadoDelJuego = 1

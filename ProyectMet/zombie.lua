@@ -1,9 +1,17 @@
+math.randomseed(os.time())
+
+
 --Funcion para crear un zombie
 function crearZombie()
     local zombie = {}
     zombie.x = 0
     zombie.y = 0
-    zombie.velocidad = 140
+    local velocid = math.random(50, 160)
+    if velocid % 5 == 0 or velocid % 3 == 0 then
+      zombie.velocidad = velocid
+    else
+      zombie.velocidad = 140
+    end
     zombie.muerto = false
 	
 	--Aleatoriamente los coloca en uno de los lados de la pantalla
