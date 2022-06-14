@@ -1,6 +1,6 @@
 zombie = require "zombie"
 Menu = require "menu"
-Object = require "librerias/classic/classic"
+
 
 function love.load()
     math.randomseed(os.time())
@@ -26,7 +26,16 @@ function love.load()
     jugador.x = love.graphics.getWidth() / 2
     jugador.y = love.graphics.getHeight() / 2
     jugador.velocidad = 180
-	
+    
+    
+    musicaReproduciendose = true
+    musicaOnOff = 'On'
+    
+    if musicaReproduciendose == false then
+      musicaOnOff = 'Off'
+    end
+    
+    
 	--Obtener la fuente en la que van a estar
 	--las letras que aparezcan en pantalla
    love.graphics.setNewFont("04b_30/04b_30__.TTF", 80)
@@ -37,7 +46,7 @@ function love.load()
     sonidoPerder = love.audio.newSource("musica/gameOverEffect.wav", "static")
     sonidoEfectoDisparo = love.audio.newSource("musica/firingEffect.wav", "static")
     
-    musicaJuego:setVolume(0.6)
+    musicaJuego:setVolume(0.2)
 	
 	--Cargar tables de zombies y de las balas
     zombies = {}
@@ -48,6 +57,8 @@ function love.load()
     puntaje = 0
     tiempoMax = 2
     temporizador = tiempoMax
+    nivelActual = 1
+    
     
     
     if estadoDelJuego == 1 then
@@ -70,11 +81,23 @@ function love.load()
         love.event.quit(0)
       end
     }
+
+    --Boton para parar o reproducir la musica
+    menu:añadirItem{
+      nombre = 'Musica',--.. musicaOnOff,
+      accion = function()
+        if musicaReproduciendose == true then
+          musicaReproduciendose = false
+        else
+          musicaReproduciendose = true
+        end
+      end
+    }
     end
 end
 
 function love.update(dt)
-	
+    
 	--Tomar el input del usuario sobre la direccion 
 	--SOLO si el juego YA HA COMENZADO
     if estadoDelJuego == 2 then
@@ -91,9 +114,21 @@ function love.update(dt)
             jugador.y = jugador.y + jugador.velocidad*dt
         end
         
+        if musicaReproduciendose == false then
+          love.audio.stop(musicaIntro)
+        elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
+          --funciona bien xd
+        end
+        
     
         
     elseif estadoDelJuego == 1 then
+      if musicaReproduciendose == false then
+        love.audio.stop(musicaIntro)
+        
+      elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
+        --funciona bien xd
+      end
       menu:actualizar(dt)
       
     end
@@ -107,7 +142,7 @@ function love.update(dt)
 		
 		
 		--Reinicia el juego si un zombie toca al jugador
-        if distanciaEntre(z.x, z.y, jugador.x, jugador.y) < 30 then
+        if distanciaEntre(z.x, z.y, jugador.x, jugador.y) < 40 then
           
           --Si los corazones son mas de uno
           if corazones > 1 then
@@ -160,7 +195,7 @@ function love.update(dt)
 	--Si es asi, los elimina de la tabla y aumenta el puntaje
     for i,z in ipairs(zombies) do
         for j,b in ipairs(balas) do
-            if distanciaEntre(z.x, z.y, b.x, b.y) < 20 then
+            if distanciaEntre(z.x, z.y, b.x, b.y) < 30 then
                 z.muerto = true
                 b.muerto = true
                 puntaje = puntaje + 1
@@ -201,6 +236,7 @@ function love.draw()
     --Sacar el tamaño de la ventana
     local anchoVentana = love.graphics.getWidth()
     local altoVentana = love.graphics.getHeight()
+    
 	--Si el juego aun no comenzo
     if estadoDelJuego == 1 then
       love.graphics.draw(sprites.fondoMenu, 0, 0)
@@ -244,17 +280,19 @@ function love.draw()
       love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
     end
     
-    --Para la musica de la introduccion si esta sonando
-    if musicaIntro:isPlaying() then
-      love.audio.stop(musicaIntro)
+    if musicaReproduciendose == true then
+      --Para la musica de la introduccion si esta sonando
+      if musicaIntro:isPlaying() then
+        love.audio.stop(musicaIntro)
+      end
+      
+      --Musica dentro del juego
+      love.audio.play(musicaJuego)
+          if not musicaJuego:isPlaying( ) then
+            love.audio.play(musicaJuego)
+          end
     end
-    
-    --Musica dentro del juego
-    love.audio.play(musicaJuego)
-        if not musicaJuego:isPlaying( ) then
-          love.audio.play(musicaJuego)
-        end
-    end
+  end
 end
 
 --Funcion para crear zombies una vez se comience el juego apretando el espacio
@@ -293,4 +331,9 @@ end
 function distanciaEntre(x1, y1, x2, y2)
     return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
 end
+
+function nivelNuevo(nivelActual)
+  
+end
+
 end

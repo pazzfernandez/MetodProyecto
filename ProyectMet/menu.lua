@@ -6,6 +6,7 @@ return {
 			items = {},
 			seleccionado = 1,
 			animacFuera = 0,
+      
       --Añade los items a la tabla
 			añadirItem = function(self, item)
 				table.insert(self.items, item)
