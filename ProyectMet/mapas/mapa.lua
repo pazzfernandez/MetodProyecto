@@ -41,3 +41,68 @@ function Mapa.dibujar(mapa1) --dibujar el mapa
     end
 end  
 end
+
+--generador de laberinto
+function Mapa.generar(m, alto, ancho) --recibe un mapa como argumento y sus dimensiones
+  
+  --condición de salida de la recursión
+  if alto==99 or ancho==99 then
+    return m
+  end
+  
+  --elige una orientación aleatoria
+  orientacionPared = orientacionAleatoria()
+  
+  --agreaga la pared según la orientación
+  if orientacionPared=="vertical" then 
+    
+    --elige dónde va la pared
+    paredAleatoria = math.random(1,ancho) 
+    
+    --elige una casilla para abrir
+    abertura = math.random(2,alto)
+    
+    for i=1,alto do
+      if i==abertura then
+        m.lienzo[i][paredAleatoria]=0
+      else
+        m.lienzo[i][paredAleatoria]=1
+      end
+    end
+    
+    --modificar alto para pasarlo como paramétro
+    ancho = paredAleatoria-1        --REVISAAAAAAAR
+  else
+    
+    paredAleatoria = math.random(2,alto) 
+    
+    --elige una casilla para abrir
+    abertura = math.random(1,ancho)
+    
+    for j=1,ancho do
+      if j==abertura then
+        m.lienzo[paredAleatoria][j]=0
+      else
+        m.lienzo[paredAleatoria][j]=1
+      end
+    end
+    
+    --modificar ancho para pasarlo como paramétro
+    alto = paredAleatoria-1
+  end
+
+  --recursividad
+  m:generar(alto, ancho)
+  
+end
+
+
+
+function orientacionAleatoria() --devuelve un string con la orientación de la pared elegida de forma aleatoria 
+  numAleatorio = math.random(1,10)
+  if numAleatorio<=5  then
+    return "vertical" 
+  else
+    return "horizontal"
+  end
+end
