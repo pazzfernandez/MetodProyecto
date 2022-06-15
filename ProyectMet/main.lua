@@ -1,5 +1,6 @@
 zombie = require "zombie"
 Menu = require "menu"
+config = require "config"
 
 
 function love.load()
@@ -333,7 +334,7 @@ function distanciaEntre(x1, y1, x2, y2)
 end
 
 function nivelNuevo(nivelActual)
-  
+  --A implementar
 end
 
 end
