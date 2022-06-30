@@ -250,6 +250,24 @@ function love.update(dt)
           cam.y = h/2
         end
         
+        --Para los bordes de abajo:
+        --Cuanto tengamos un tile map funcionar habra que añadir:
+        
+        --local mapaTileW = mapaJuego.width * mapaJuego.tileWidth
+        --local mapaTileH = mapaJuedo.height * mapaJuedo.tileHeight
+        
+        --Solo si estamos trabajando con tiles, si estamos trabajando
+        --con un fondo normal, no se haria el calculo y solo se pondria 
+        --el ancho/alto del fondo :D
+        
+         --if cam.x < (mapaTileW - w/2) then
+          --cam.x = mapaTileW - w/2
+        --end
+        --if cam.y < (mapaTileH - h/2) then
+          --cam.y = mapaTileH - h/2
+        --end
+        
+        
     else
       --Si estamos en el menu, que la camara este fija en el medio
       cam:lookAt(w, h)
@@ -287,9 +305,6 @@ function love.draw()
           end
       
       elseif estadoDelJuego == 2 then
-    --Dibuja el puntaje en pantalla
-      love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
-      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
     
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
@@ -304,10 +319,7 @@ function love.draw()
           love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
       end
       
-      --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
-      if corazones ~=0 then
-        love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
-      end
+      
       
       if musicaReproduciendose == true then
         --Para la musica de la introduccion si esta sonando
@@ -323,6 +335,17 @@ function love.draw()
       end
     end
     cam:detach()
+    
+    if estadoDelJuego == 2 then
+    --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
+      if corazones ~=0 then
+        love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
+      end
+      
+    --Dibuja el puntaje en pantalla
+      love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
+      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
+    end
 end
 
 --Funcion para crear zombies una vez se comience el juego apretando el espacio
