@@ -6,6 +6,10 @@ config = require "config"
 function love.load()
     math.randomseed(os.time())
     
+    --Importar la camara de la libreria
+    camara = require 'librerias/camera'
+    cam = camara()
+    
     
     --Crea una tabla con todos los dibujos de los corazones
     dibujos = {}
@@ -24,7 +28,7 @@ function love.load()
 	
 	--Obtener los atributos del jugador
     jugador = {}
-    jugador.x = love.graphics.getWidth() / 2
+    jugador.x = (love.graphics.getWidth() / 2)  
     jugador.y = love.graphics.getHeight() / 2
     jugador.velocidad = 180
     
@@ -226,9 +230,32 @@ function love.update(dt)
             crearZombie()
             tiempoMax = 0.95 * tiempoMax
             temporizador = tiempoMax
+            
         end
     end
+    
+    --Tomar la dimension de la pantalla
+    w = (love.graphics.getWidth() / 2)  
+    h = love.graphics.getHeight() / 2
+    
+    if estadoDelJuego == 2 then   
+        --Hacer que la camara siga al jugador
+        cam:lookAt(jugador.x, jugador.y)
+        
+        --Hacer que no llegue a los bordes, que la camara pare de seguirlo si se acerca al limite
+        if cam.x < w/2 then
+          cam.x = w/2
+        end
+        if cam.y < h/2 then
+          cam.y = h/2
+        end
+        
+    else
+      --Si estamos en el menu, que la camara este fija en el medio
+      cam:lookAt(w, h)
 
+    end
+end
 
 function love.draw()
 	--Dibuja el fondo
@@ -238,62 +265,64 @@ function love.draw()
     local anchoVentana = love.graphics.getWidth()
     local altoVentana = love.graphics.getHeight()
     
-	--Si el juego aun no comenzo
-    if estadoDelJuego == 1 then
-      love.graphics.draw(sprites.fondoMenu, 0, 0)
-      love.graphics.setNewFont("04b_30/04b_30__.TTF", 70)
-        menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
-        
-        --love.graphics.setNewFont("llpixel/LLPIXEL3.TTF", 90)
-        love.graphics.setNewFont("pixelmania/Pixelmania.TTF", 45)
-        love.graphics.printf("MATASUEGRAS", 0, love.graphics.getHeight()-525, love.graphics.getWidth(), "center")
-        
-        if musicaJuego:isPlaying() then
-          love.audio.stop(musicaJuego)
-        end
-    
-        --Musica para el menu principal
-        love.audio.play(musicaIntro)
-        if not musicaIntro:isPlaying( ) then
+    cam:attach()
+    --Si el juego aun no comenzo
+      if estadoDelJuego == 1 then
+        love.graphics.draw(sprites.fondoMenu, 0, 0)
+        love.graphics.setNewFont("04b_30/04b_30__.TTF", 70)
+          menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
+          
+          --love.graphics.setNewFont("llpixel/LLPIXEL3.TTF", 90)
+          love.graphics.setNewFont("pixelmania/Pixelmania.TTF", 45)
+          love.graphics.printf("MATASUEGRAS", 0, love.graphics.getHeight()-525, love.graphics.getWidth(), "center")
+          
+          if musicaJuego:isPlaying() then
+            love.audio.stop(musicaJuego)
+          end
+      
+          --Musica para el menu principal
           love.audio.play(musicaIntro)
-        end
-		
-    elseif estadoDelJuego == 2 then
-	--Dibuja el puntaje en pantalla
-    love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
-    love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
-	
-	--Dibuja al jugador en la pantalla
-    love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
-	
-	--Dibuja a los zombies 
-    for i,z in ipairs(zombies) do
-        love.graphics.draw(sprites.zombie, z.x, z.y, zombieJugadorAngulo(z), nil, nil, sprites.zombie:getWidth()/2, sprites.zombie:getHeight()/2)
-    end
-	
-	--Dibuja las balas
-    for i,b in ipairs(balas) do
-        love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
-    end
+          if not musicaIntro:isPlaying( ) then
+            love.audio.play(musicaIntro)
+          end
+      
+      elseif estadoDelJuego == 2 then
+    --Dibuja el puntaje en pantalla
+      love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
+      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
     
-    --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
-    if corazones ~=0 then
-      love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
-    end
+    --Dibuja al jugador en la pantalla
+      love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
     
-    if musicaReproduciendose == true then
-      --Para la musica de la introduccion si esta sonando
-      if musicaIntro:isPlaying() then
-        love.audio.stop(musicaIntro)
+    --Dibuja a los zombies 
+      for i,z in ipairs(zombies) do
+          love.graphics.draw(sprites.zombie, z.x, z.y, zombieJugadorAngulo(z), nil, nil, sprites.zombie:getWidth()/2, sprites.zombie:getHeight()/2)
+      end
+    
+    --Dibuja las balas
+      for i,b in ipairs(balas) do
+          love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
       end
       
-      --Musica dentro del juego
-      love.audio.play(musicaJuego)
-          if not musicaJuego:isPlaying( ) then
-            love.audio.play(musicaJuego)
-          end
+      --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
+      if corazones ~=0 then
+        love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
+      end
+      
+      if musicaReproduciendose == true then
+        --Para la musica de la introduccion si esta sonando
+        if musicaIntro:isPlaying() then
+          love.audio.stop(musicaIntro)
+        end
+        
+        --Musica dentro del juego
+        love.audio.play(musicaJuego)
+            if not musicaJuego:isPlaying( ) then
+              love.audio.play(musicaJuego)
+            end
+      end
     end
-  end
+    cam:detach()
 end
 
 --Funcion para crear zombies una vez se comience el juego apretando el espacio
@@ -337,4 +366,3 @@ function nivelNuevo(nivelActual)
   --A implementar
 end
 
-end
