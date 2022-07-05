@@ -365,8 +365,10 @@ function love.mousepressed( x, y, boton )
 end
 
 function love.keypressed(key)
-	menu:keypressed(key)
-
+  if estadoDelJuego == 1 then
+    
+    menu:keypressed(key)
+  end
 end
 
 --Funcion para crear una bala
