@@ -63,6 +63,7 @@ function love.load()
     tiempoMax = 2
     temporizador = tiempoMax
     nivelActual = 1
+    pausa = false
     
     
     
@@ -105,6 +106,8 @@ function love.update(dt)
     
 	--Tomar el input del usuario sobre la direccion 
 	--SOLO si el juego YA HA COMENZADO
+
+  if pausa == false then --ESTADO 2 SOLO FUNCIONA SI NO ESTA EN PAUSA
     if estadoDelJuego == 2 then
         if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and jugador.x < love.graphics.getWidth() then
             jugador.x = jugador.x + jugador.velocidad*dt
@@ -119,6 +122,11 @@ function love.update(dt)
             jugador.y = jugador.y + jugador.velocidad*dt
         end
         
+        if(love.keyboard.isDown("escape")) then
+          pausa = true
+        end
+
+
         if musicaReproduciendose == false then
           love.audio.stop(musicaIntro)
         elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
@@ -273,6 +281,10 @@ function love.update(dt)
       cam:lookAt(w, h)
 
     end
+  end
+  if(love.keyboard.isDown("return")) then
+    pausa = false
+  end
 end
 
 function love.draw()
@@ -346,6 +358,12 @@ function love.draw()
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
       love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
     end
+
+    --Dibuja pantalla de pausa
+    if pausa then         
+      love.graphics.draw(sprites.fondoMenu, 0, 0)
+      love.graphics.printf("Juego pausado, pulsa enter para regresar", 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
+    end
 end
 
 --Funcion para crear zombies una vez se comience el juego apretando el espacio
@@ -357,7 +375,7 @@ end
 
 --Funcion para disparar si ya ha comenzado
 function love.mousepressed( x, y, boton )
-    if boton == 1 and estadoDelJuego == 2 then
+    if boton == 1 and estadoDelJuego == 2 and pausa == false then
         crearBala()
         love.audio.play( sonidoEfectoDisparo )
     
@@ -390,4 +408,3 @@ end
 function nivelNuevo(nivelActual)
   --A implementar
 end
-
