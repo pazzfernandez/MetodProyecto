@@ -361,7 +361,7 @@ function love.draw()
 
     --Dibuja pantalla de pausa
     if pausa then         
-      love.graphics.draw(sprites.fondoMenu, 0, 0)
+      love.graphics.draw(sprites.fondoPausa, 0, 0)
       love.graphics.printf("Juego pausado, pulsa enter para regresar", 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
     end
 end
