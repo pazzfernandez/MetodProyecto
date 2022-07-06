@@ -34,6 +34,8 @@ end
 function generarLaberinto(grilla, iActual, jActual)
   
   vecinaElegida = {}
+  vecinaElegida.f = 0
+  vecinaElegida.c = 0
   
   print("-------------------------")
   print("Casilla actual: "," i: ", iActual, " j: ",jActual)
@@ -41,13 +43,13 @@ function generarLaberinto(grilla, iActual, jActual)
   print("Estado: ", grilla[iActual][jActual].visitada)
   vecinaElegida = mirarVecinas(grilla, grilla[iActual][jActual]) --devuelve una casilla vecina aleatoria que no ha sido visitada
   
-  if vecinaElegida~=nil then
+  if vecinaElegida or vecinaElegida.f~=0 then --vecinaElegida.c~=nil and vecinaElegida.f~=nil then
     print("Vecina elegida:", vecinaElegida, " i: ", vecinaElegida.f, " j: ", vecinaElegida.c)
     sacarPared(grilla, vecinaElegida, grilla[iActual][jActual])
     iActual = vecinaElegida.f
     jActual = vecinaElegida.c
     --grilla[iActual][jActual].visitada = true
-    if(iActual >0 and jActual > 0) then
+    if(iActual > 0 and jActual > 0) then
       generarLaberinto(grilla, iActual, jActual)
     end
   end
@@ -59,318 +61,248 @@ function mirarVecinas(grilla, casilla)  --self.vecinas = {arriba=true, der=true,
   contador = 0
   if casilla.f==1 and casilla.c==1 then --si es la esquina superior izquierda
     
-    derecha = mirarDerecha(grilla, casilla, contador) --derecha
-    contador = contador + derecha[1]
-    if derecha[2].f~=-1 then
-      table.insert(noVisitadas,1,derecha[2])
+    derecha = mirarDerecha(grilla, casilla) --derecha
+    if derecha[1] ~= 0  then
+      contador = contador + derecha[1]
+      table.insert(noVisitadas,contador,derecha[2])
+      print("Mirar derecha vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
+    end 
+    
+    abajo = mirarAbajo(grilla, casilla) --abajo
+    if abajo[1] ~= 0 then
+      contador = contador + abajo[1]
+      table.insert(noVisitadas,contador,abajo[2])
+      print("Mirar abajo vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    abajo = mirarAbajo(grilla, casilla, contador) --abajo
-    contador = contador + abajo[1]
-    if abajo[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,abajo[2])
-      else 
-        table.insert(noVisitadas,1,abajo[2])
-      end
-    end
-    
+
   elseif casilla.f==1 and casilla.c==grilla.base then--si es la esquina superior derecha
     
-    abajo = mirarAbajo(grilla, casilla, contador) --abajo
-    contador = contador + abajo[1]
-    if abajo[2]~=-1 then
-      table.insert(noVisitadas,1,abajo[2])
+    abajo = mirarAbajo(grilla, casilla) --abajo
+    if abajo[1] ~=0 then
+      contador = contador + abajo[1]
+      table.insert(noVisitadas,contador,abajo[2])
+      print("Mirar abajo vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
-    izquierda = mirarIzquierda(grilla, casilla, contador) --izquierda
-    contador = contador + izquierda[1]
-    if izquierda[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,izquierda[2])
-      else 
-        table.insert(noVisitadas,1,izquierda[2])
-      end
+    
+    izquierda = mirarIzquierda(grilla, casilla) --izquierda
+    if izquierda[1] ~=0 then
+      contador = contador + izquierda[1]
+      table.insert(noVisitadas,contador,izquierda[2])
+      print("Mirar izquierda vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
   elseif casilla.f==grilla.altura and casilla.c==1 then--si es la esquina inferior izquierda
     
-    derecha = mirarDerecha(grilla, casilla, contador) --derecha
-    contador = contador + derecha[1]
-    if derecha[2].f~=-1 then
-      table.insert(noVisitadas,1,derecha[2])
-    end
-    arriba = mirarArriba(grilla, casilla, contador) --arriba
-    contador = contador + arriba[1]
-    if arriba[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,arriba[2])
-      else 
-        table.insert(noVisitadas,1,arriba[2])
-      end
+    derecha = mirarDerecha(grilla, casilla) --derecha
+    if derecha[1] ~=0 then
+      contador = contador + derecha[1]
+      table.insert(noVisitadas,contador,derecha[2])
+      print("Mirar derecha vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
+    end  
+    
+    arriba = mirarArriba(grilla, casilla) --arriba
+    if arriba[1] ~=0 then
+      contador = contador + arriba[1]
+      table.insert(noVisitadas,contador,arriba[2])
+      print("Mirar arriba vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
   elseif casilla.f==grilla.altura and casilla.c==grilla.base then --si es la esquina inferior derecha
     
-    izquierda = mirarIzquierda(grilla, casilla, contador) --izquierda
-    contador = contador + izquierda[1]
-    if izquierda[2].f~=-1 then
-      table.insert(noVisitadas,1,izquierda[2])
-    end
-    arriba = mirarArriba(grilla, casilla, contador) --arriba
-    contador = contador + arriba[1]
-    if arriba[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,arriba[2])
-      else 
-        table.insert(noVisitadas,1,arriba[2])
-      end
+    izquierda = mirarIzquierda(grilla, casilla) --izquierda
+    if izquierda[1]~=0 then
+      contador = contador + izquierda[1]
+      table.insert(noVisitadas,contador,izquierda[2])
+      print("Mirar izquierda vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
+    end 
+    
+    arriba = mirarArriba(grilla, casilla) --arriba
+    if arriba[1] ~=0 then
+      contador = contador + arriba[1]
+      table.insert(noVisitadas,contador,arriba[2])
+      print("Mirar arriba vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
   elseif casilla.f==1 then --si es una de la fila superior
-    derecha = mirarDerecha(grilla, casilla, contador) --derecha
-    contador = contador + derecha[1]
-    if derecha[2].f~=-1 then
-      table.insert(noVisitadas,1,derecha[2])
+    derecha = mirarDerecha(grilla, casilla) --derecha
+    if derecha[1]~=0 then
+      contador = contador + derecha[1]
+      table.insert(noVisitadas,contador,derecha[2])
+      print("Mirar derecha vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    abajo = mirarAbajo(grilla, casilla, contador) --abajo
-    contador = contador + abajo[1]
-    if abajo[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,abajo[2])
-      else 
-        table.insert(noVisitadas,1,abajo[2])
-      end
+    abajo = mirarAbajo(grilla, casilla) --abajo
+    if abajo[1]~=0 then
+      contador = contador + abajo[1]
+      table.insert(noVisitadas,contador,abajo[2])
+      print("Mirar abajo vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    izquierda = mirarIzquierda(grilla, casilla, contador) --izquierda
-    contador = contador + izquierda[1]
-    if izquierda[2].f~=-1 then
-      if contador==2 then 
-        table.insert(noVisitadas,3,izquierda[2])
-      elseif contador==1 then
-        table.insert(noVisitadas,2,izquierda[2])
-      else
-        table.insert(noVisitadas,1,izquierda[2])
-      end
+    izquierda = mirarIzquierda(grilla, casilla) --izquierda
+    if izquierda[1]~=0 then
+      contador = contador + izquierda[1]
+      table.insert(noVisitadas,contador,izquierda[2])
+      print("Mirar izquierda vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
+      
   elseif casilla.f==grilla.altura then --si es una de la fila inferior
     
-    derecha = mirarDerecha(grilla, casilla, contador) --derecha
-    contador = contador + derecha[1]
-    if derecha[2].f~=-1 then
-      table.insert(noVisitadas,1,derecha[2])
+    derecha = mirarDerecha(grilla, casilla) --derecha
+    if derecha[1]~=0 then
+      contador = contador + derecha[1]
+      table.insert(noVisitadas,contador,derecha[2])
+      print("Mirar derecha vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    izquierda = mirarIzquierda(grilla, casilla, contador) --izquierda
-    contador = contador + izquierda[1]
-    if izquierda[2].f~=-1 then
-      if contador==1 then 
-        table.insert(noVisitadas,2,izquierda[2])
-      else
-        table.insert(noVisitadas,1,izquierda[2])
-      end
+    izquierda = mirarIzquierda(grilla, casilla) --izquierda
+    if izquierda[1] ~=0 then
+      contador = contador + izquierda[1]
+      table.insert(noVisitadas,contador,izquierda[2])
+      print("Mirar izquierda vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    arriba = mirarArriba(grilla, casilla, contador) --arriba
-    contador = contador + arriba[1]
-    if arriba[2].f~=-1 then
-      if contador==2 then
-        table.insert(noVisitadas,3,arriba[2])
-      elseif contador==1 then
-        table.insert(noVisitadas,2,arriba[2])
-      else 
-        table.insert(noVisitadas,1,arriba[2])
-      end
+    arriba = mirarArriba(grilla, casilla) --arriba
+    if arriba[1]~=0 then
+      contador = contador + arriba[1]
+      table.insert(noVisitadas,contador,arriba[2])
+      print("Mirar arriba vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
   elseif casilla.c==1 then --si es una de la columna izquierda
     
-    derecha = mirarDerecha(grilla, casilla, contador) --derecha
-    contador = contador + derecha[1]
-    if derecha[2].f~=-1 then
-      table.insert(noVisitadas,1,derecha[2])
+    derecha = mirarDerecha(grilla, casilla) --derecha
+    if derecha[1]~=0 then
+      contador = contador + derecha[1]
+      table.insert(noVisitadas,contador,derecha[2])
+      print("Mirar derecha vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    abajo = mirarAbajo(grilla, casilla, contador) --abajo
-    contador = contador + abajo[1]
-    if abajo[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,abajo[2])
-      else 
-        table.insert(noVisitadas,1,abajo[2])
-      end
+    abajo = mirarAbajo(grilla, casilla) --abajo
+    if abajo[1]~=0 then
+      contador = contador + abajo[1]
+      table.insert(noVisitadas,contador,abajo[2])
+      print("Mirar abajo vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    arriba = mirarArriba(grilla, casilla, contador) --arriba
-    contador = contador + arriba[1]
-    if arriba[2].f~=-1 then
-      if contador==2 then
-        table.insert(noVisitadas,3,arriba[2])
-      elseif contador==1 then
-        table.insert(noVisitadas,2,arriba[2])
-      else 
-        table.insert(noVisitadas,1,arriba[2])
-      end
+    arriba = mirarArriba(grilla, casilla) --arriba
+    if arriba[1]~=0 then
+      contador = contador + arriba[1]
+      table.insert(noVisitadas,contador,arriba[2])
+      print("Mirar arriba vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
   elseif casilla.c==grilla.base then --si es una de la columna derecha
-
-    abajo = mirarAbajo(grilla, casilla, contador) --abajo
-    contador = contador + abajo[1]
-    if abajo[2].f~=-1 then 
-      table.insert(noVisitadas,1,abajo[2])
+    
+    abajo = mirarAbajo(grilla, casilla) --abajo
+    if abajo[1]~=0 then 
+      contador = contador + abajo[1]
+      table.insert(noVisitadas,contador,abajo[2])
+      print("Mirar abajo vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    izquierda = mirarIzquierda(grilla, casilla, contador) --izquierda
-    contador = contador + izquierda[1]
-    if izquierda[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,izquierda[2])
-      else
-        table.insert(noVisitadas,1,izquierda[2])
-      end
+    izquierda = mirarIzquierda(grilla, casilla) --izquierda
+    if izquierda[1]~=0 then
+      contador = contador + izquierda[1]
+      table.insert(noVisitadas,contador,izquierda[2])
+      print("Mirar izquierda vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    arriba = mirarArriba(grilla, casilla, contador) --arriba
-    contador = contador + arriba[1]
-    if arriba[2].f~=-1 then
-      if contador==2 then
-        table.insert(noVisitadas,3,arriba[2])
-      elseif contador==1 then
-        table.insert(noVisitadas,2,arriba[2])
-      else 
-        table.insert(noVisitadas,1,arriba[2])
-      end
+    arriba = mirarArriba(grilla, casilla) --arriba
+    if arriba[1]~=0 then
+      contador = contador + arriba[1]
+      table.insert(noVisitadas,contador,arriba[2])
+      print("Mirar arriba vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
   else --si es una del centro
     
-    derecha = mirarDerecha(grilla, casilla, contador) --derecha
-    contador = contador + derecha[1]
-    if derecha[2].f~=-1 then
-      table.insert(noVisitadas,1,derecha[2])
+    derecha = mirarDerecha(grilla, casilla) --derecha
+    if derecha[1]~=0 then
+      contador = contador + derecha[1]
+      table.insert(noVisitadas,contador,derecha[2])
+      print("Mirar derecha vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    abajo = mirarAbajo(grilla, casilla, contador) --abajo
-    contador = contador + abajo[1]
-    if abajo[2].f~=-1 then
-      if contador==1 then
-        table.insert(noVisitadas,2,abajo[2])
-      else 
-        table.insert(noVisitadas,1,abajo[2])
-      end
+    abajo = mirarAbajo(grilla, casilla) --abajo
+    if abajo[1]~=0 then
+      contador = contador + abajo[1]
+      table.insert(noVisitadas,contador,abajo[2])
+      print("Mirar abajo vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    izquierda = mirarIzquierda(grilla, casilla, contador) --izquierda
-    contador = contador + izquierda[1]
-    if izquierda[2].f~=-1 then
-      if contador==2 then 
-        table.insert(noVisitadas,3,izquierda[2])
-      elseif contador==1 then
-        table.insert(noVisitadas,2,izquierda[2])
-      else
-        table.insert(noVisitadas,1,izquierda[2])
-      end
+    izquierda = mirarIzquierda(grilla, casilla) --izquierda
+    if izquierda[1]~=0 then
+      contador = contador + izquierda[1]
+      table.insert(noVisitadas,contador,izquierda[2])
+      print("Mirar izquierda vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
-    arriba = mirarArriba(grilla, casilla, contador) --arriba
-    contador = contador + arriba[1]
-    if arriba[2].f~=-1 then
-      if contador==3 then
-        table.insert(noVisitadas,4,arriba[2])
-      elseif contador==2 then
-        table.insert(noVisitadas,3,arriba[2])
-      elseif contador==1 then
-        table.insert(noVisitadas,2,arriba[2])
-      else
-        table.insert(noVisitadas,1,arriba[2])
-      end
+    arriba = mirarArriba(grilla, casilla) --arriba
+    if arriba[1]~=0 then
+      contador = contador + arriba[1]
+      table.insert(noVisitadas,contador,arriba[2])
+      print("Mirar arriba vecina: ", noVisitadas[contador], " - CONTADOR: ", contador)
     end
     
   end
   
   print("CONTADOR: ", contador)
   if contador~=0 then
-    print("aentrooooooo--------")
-    numAleatorio = math.random(1,contador)
-    numAleatorio2 = numeroAleatorio(contador)
-    print("Numero aleatorio: ")
-    print("CON MATH.RANDOM",numAleatorio)
-    print("CON FUNCION", numAleatorio2)
-    
     for i=1,contador,1 do
       print(i," - ",noVisitadas[i])
     end
     
-    vecina = noVisitadas[numAleatorio2]
-    --print("Vecina elegida DENTRO FUNCION:", vecina, " i: ", vecina.f, " j: ", vecina.c)
-    --print("Casilla elegida: ",vecina, " i: ", vecina.f, " j: ", vecina.c)
+    numAleatorio = math.random(1,contador)
+    
+    vecina = noVisitadas[numAleatorio]
+  else
+    vecina.f = 0
+    vecina.c = 0
   end
+  
   return vecina
 end
 
-function mirarArriba(grilla, casilla, contador)
+function mirarArriba(grilla, casilla)
   if grilla[casilla.f-2][casilla.c].visitada==false then
     indice = {f=casilla.f-2, c=casilla.c}
-    contador = 1
+    c = 1
   else 
-    indice = {f=-1, c=-1}
-    contador = 0
+    indice = nil
+    c = 0
   end
-  return {contador, indice}
+  return {c, indice}
 end
-function mirarDerecha(grilla, casilla, contador)
+function mirarDerecha(grilla, casilla)
   if grilla[casilla.f][casilla.c+2].visitada==false then
     indice = {f=casilla.f, c=casilla.c+2}
-    contador = 1
+    c = 1
   else 
-    indice = {f=-1, c=-1}
-    contador = 0
+    indice = nil
+    c = 0
   end
-  return {contador, indice}
+  return {c, indice}
 end
-function mirarAbajo(grilla, casilla, contador)
-   if grilla[casilla.f+2][casilla.c].visitada==false then
+function mirarAbajo(grilla, casilla)
+  if grilla[casilla.f+2][casilla.c].visitada==false then
     indice = {f=casilla.f+2, c=casilla.c}
-    contador = 1
+    c = 1
   else 
-    indice = {f=-1, c=-1}
-    contador = 0
+    indice = nil
+    c = 0
   end
-  return {contador, indice}
+  return {c, indice}
 end
-function mirarIzquierda(grilla, casilla, contador)
+function mirarIzquierda(grilla, casilla)
   if grilla[casilla.f][casilla.c-2].visitada==false then
     indice = {f=casilla.f, c=casilla.c-2}
-    contador = 1
+    c = 1
   else 
-    indice = {f=-1, c=-1}
-    contador = 0
+    indice = nil
+    c = 0
   end
-  return {contador, indice}
-end
-
-
-
-function numeroAleatorio(cantVecinas)
-  cantNumeros = cantVecinas*5 --calcular el limite de la función random, cada vacina tendrá 5 numeros asignados
-
-  num = math.random(1, cantNumeros) --tomar un numero aleatorio en el rango de 1 a limite
-
-  --revisar a que vecina corresponde el numero
-  inicio = 1  
-  fin = 5
-  for i = 1,cantVecinas,1 do
-    for j=inicio,fin,1 do
-      if(j == num) then
-        seleccionada = i
-        return seleccionada
-      end
-    end
-    inicio = inicio + 5
-    fin = fin + 5
-  end
+  return {c, indice}
 end
 
 function sacarPared(grilla, proxima, actual)
@@ -384,8 +316,7 @@ function sacarPared(grilla, proxima, actual)
       grilla[actual.f][proxima.c+1].visitada = true
       print("PARED REMOVIDA: ", grilla[actual.f][proxima.c+1].f, " - ", grilla[actual.f][proxima.c+1].c)
     end
-  end
-  if(proxima.c == actual.c) then
+  elseif(proxima.c == actual.c) then
     if(proxima.f > actual.f) then
       grilla[proxima.f-1][actual.c].tipo = 0
       grilla[proxima.f-1][actual.c].visitada = true
