@@ -368,10 +368,6 @@ function love.update(dt)
   --SI LA PAUSA ESTA ACTIVA
   else
     pausa:actualizar(dt)
-
-    if(love.keyboard.isDown("return")) then
-      estadoPausa = false
-    end
   end
 end
 
