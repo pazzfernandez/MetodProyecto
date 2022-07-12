@@ -87,13 +87,7 @@ function love.load()
       pausa:añadirItem{
       nombre = 'Reanudar',
       accion = function()
-        estadoDelJuego = 2
-        tiempoMax = 2
-        temporizador = tiempoMax
-        puntaje = 0
-        
-         --Variable de vidas del jugador
-        corazones = 3
+        estadoPausa = false
       end
     }
     --Boton para parar o reproducir la musica
