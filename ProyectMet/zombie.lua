@@ -35,7 +35,7 @@ end
 
 --Funcion para sacar el angulo al que deberia ver el jugador
 function jugadorAnguloMouse()
-    return math.atan2( jugador.y - love.mouse.getY(), jugador.x - love.mouse.getX() ) + math.pi
+    return math.atan2( jugador.yF - love.mouse.getY(), jugador.xF - love.mouse.getX() ) + math.pi
 end
 
 --Angulo del zombie para llegar al jugador

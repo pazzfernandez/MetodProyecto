@@ -42,6 +42,8 @@ function love.load()
     jugador = {}
     jugador.x = (love.graphics.getWidth() / 2)  
     jugador.y = love.graphics.getHeight() / 2
+    jugador.xF = (love.graphics.getWidth() / 2)  
+    jugador.yF = love.graphics.getHeight() / 2
     jugador.velocidad = 180
     
     
@@ -85,7 +87,13 @@ function love.load()
       pausa:añadirItem{
       nombre = 'Reanudar',
       accion = function()
-        estadoPausa = false
+        estadoDelJuego = 2
+        tiempoMax = 2
+        temporizador = tiempoMax
+        puntaje = 0
+        
+         --Variable de vidas del jugador
+        corazones = 3
       end
     }
     --Boton para parar o reproducir la musica
@@ -362,6 +370,10 @@ function love.update(dt)
   --SI LA PAUSA ESTA ACTIVA
   else
     pausa:actualizar(dt)
+
+    if(love.keyboard.isDown("return")) then
+      estadoPausa = false
+    end
   end
 end
 
