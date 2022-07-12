@@ -81,8 +81,36 @@ function love.load()
     tiempoDesplazandoce = 0
     seDesplaza = false
 
-    
-    
+      pausa = Pausa.new()
+      pausa:añadirItem{
+      nombre = 'Reanudar',
+      accion = function()
+        estadoDelJuego = 2
+        tiempoMax = 2
+        temporizador = tiempoMax
+        puntaje = 0
+        
+         --Variable de vidas del jugador
+        corazones = 3
+      end
+    }
+    --Boton para parar o reproducir la musica
+    pausa:añadirItem{
+      nombre = 'Musica',--.. musicaOnOff,
+      accion = function()
+        if musicaReproduciendose == true then
+          musicaReproduciendose = false
+        else
+          musicaReproduciendose = true
+        end
+      end
+    }
+    pausa:añadirItem{
+      nombre = 'Salir',
+      accion = function()
+        love.event.quit(0)
+      end
+    }
     
     if estadoDelJuego == 1 then
       menu = Menu.new()
@@ -165,6 +193,9 @@ function love.update(dt)
         if(love.keyboard.isDown("escape")) then
           estadoPausa = true
         end
+
+        
+
 
         if musicaReproduciendose == false then
           love.audio.stop(musicaIntro)
@@ -398,6 +429,7 @@ function love.draw()
               love.audio.play(musicaJuego)
             end
       end
+
     end
     cam:detach()
     
@@ -419,14 +451,17 @@ function love.draw()
       love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
     end
 
-    --Dibuja pantalla de pausa
-    if estadoPausa then         
+     --Dibuja pantalla de pausa
+     if estadoPausa then         
       love.graphics.draw(sprites.fondoPausa, 10, -10, 0, 0.88, 0.7) --Fondo
-      love.graphics.printf("Juego pausado, pulsa enter para regresar", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
+      love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
       love.graphics.draw(dibujos[math.floor(corazones)], 725, 485, 0, -.6, .6) --Dibuja corazones en menu
       love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-70, love.graphics.getWidth()+670, "right", 0, .5, .5) --Puntaje en menu
-
+    
+      love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
+      pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
     end
+    
 end
 
 --Funcion para crear zombies una vez se comience el juego apretando el espacio
