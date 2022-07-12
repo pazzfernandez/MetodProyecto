@@ -2,6 +2,7 @@ zombie = require "zombie"
 Menu = require "menu"
 config = require "config"
 Pausa = require "pausa"
+corazon = require "corazon"
 
 
 function love.load()
@@ -38,6 +39,7 @@ function love.load()
     sprites.jugador = love.graphics.newImage('sprites/jugador_1.png')
     sprites.zombie = love.graphics.newImage('sprites/zombie.png')
     sprites.cursor = love.graphics.newImage('sprites/cursor.png')
+    sprites.corazon = love.graphics.newImage('sprites/corazon.png')
 	
 	--Obtener los atributos del jugador
     jugador = {}
@@ -316,14 +318,21 @@ function love.update(dt)
             table.remove(balas, i)
         end
     end
-	
+
 	--Crea enemigos nuevos cada tantos segundos
     if estadoDelJuego == 2 then
         temporizador = temporizador - dt
         if temporizador <= 0 then
             crearZombie()
+            corazon.contador = corazon.contador - 1
             tiempoMax = 0.95 * tiempoMax
             temporizador = tiempoMax
+            
+            --Cada 10 enemigos, generar un corazon en un lado random del mapa
+            if corazon.contador == 0 then
+              --crearCorazon()
+              corazon.contador = 10
+            end
             
         end
     end
@@ -422,6 +431,10 @@ function love.draw()
           love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
       end
       
+      if corazonCreado == true then
+        love.graphics.draw(sprites.corazon, p.x, p.x, nil, 0.5, nil, sprites.corazon:getWidth()/2, sprites.corazon:getHeight()/2)
+      end
+      
 
       if musicaReproduciendose == true then
         --Para la musica de la introduccion si esta sonando
@@ -455,6 +468,9 @@ function love.draw()
     --Dibuja el puntaje en pantalla
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
       love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
+      
+      --Dibuja el cursor con el sprite
+       love.graphics.draw(sprites.cursor, cx-15, cy-15, 0, 0.07)
     end
 
      --Dibuja pantalla de pausa
@@ -467,9 +483,6 @@ function love.draw()
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
       pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
     end
-
-  --Dibuja el cursor con el sprite
-  love.graphics.draw(sprites.cursor, cx-15, cy-15, 0, 0.07)
     
 end
 
@@ -517,6 +530,4 @@ function distanciaEntre(x1, y1, x2, y2)
     return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
 end
 
-function nivelNuevo(nivelActual)
-  --A implementar
-end
+
