@@ -363,13 +363,16 @@ function love.update(dt)
       --Si estamos en el menu, que la camara este fija en el medio
       cam:lookAt(w, h)
 
+  end
+  
+  --SI LA PAUSA ESTA ACTIVA
+  else
+    pausa:actualizar(dt)
+
+    if(love.keyboard.isDown("return")) then
+      estadoPausa = false
     end
   end
-
-  if(love.keyboard.isDown("return")) then
-    estadoPausa = false
-  end
-
 end
 
 function love.draw()
@@ -484,7 +487,10 @@ function love.keypressed(key)
   if estadoDelJuego == 1 then
     
     menu:keypressed(key)
+  else if estadoDelJuego == 2 and estadoPausa == true then
+    pausa:keypressed(key)
   end
+end
 end
 
 --Funcion para crear una bala
