@@ -37,6 +37,7 @@ function love.load()
     sprites.bala = love.graphics.newImage('sprites/bala.png')
     sprites.jugador = love.graphics.newImage('sprites/jugador_1.png')
     sprites.zombie = love.graphics.newImage('sprites/zombie.png')
+    sprites.cursor = love.graphics.newImage('sprites/cursor.png')
 	
 	--Obtener los atributos del jugador
     jugador = {}
@@ -54,6 +55,9 @@ function love.load()
       musicaOnOff = 'Off'
     end
     
+  --Posicion de mouse y pone invisible el mouse por defecto
+    cx, cy = love.mouse.getPosition
+    love.mouse.setVisible(false)
     
 	--Obtener la fuente en la que van a estar
 	--las letras que aparezcan en pantalla
@@ -267,6 +271,9 @@ function love.update(dt)
         end
     end
 	
+  --Obtiene la posicion del mouse para el cambio de sprite del mismo
+  cx, cy = love.mouse.getPosition()
+
 	--Itera sobre todos los elementos en la tabla de balas y
 	--saca su direccion y movimiento
     for i,b in ipairs(balas) do
@@ -460,6 +467,9 @@ function love.draw()
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
       pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
     end
+
+  --Dibuja el cursor con el sprite
+  love.graphics.draw(sprites.cursor, cx-15, cy-15, 0, 0.07)
     
 end
 
