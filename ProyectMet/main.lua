@@ -73,9 +73,10 @@ function love.load()
     
     musicaJuego:setVolume(0.2)
 	
-	--Cargar tables de zombies y de las balas
+	--Cargar tables de zombies, de las balas y de corazones
     zombies = {}
     balas = {}
+    corazonest = {}
 	
 	--Otras variables necesarias
     estadoDelJuego = 1
@@ -318,20 +319,22 @@ function love.update(dt)
             table.remove(balas, i)
         end
     end
-
+  
+    contador = 10
 	--Crea enemigos nuevos cada tantos segundos
     if estadoDelJuego == 2 then
         temporizador = temporizador - dt
         if temporizador <= 0 then
             crearZombie()
-            corazon.contador = corazon.contador - 1
+            contador = contador - 1
             tiempoMax = 0.95 * tiempoMax
             temporizador = tiempoMax
             
             --Cada 10 enemigos, generar un corazon en un lado random del mapa
-            if corazon.contador == 0 then
-              --crearCorazon()
-              corazon.contador = 10
+            if contador == 0 then
+              crearCorazon()
+              contador = 10
+              corazonCreado = true
             end
             
         end
@@ -431,7 +434,8 @@ function love.draw()
           love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
       end
       
-      if corazonCreado == true then
+       --Dibuja los corazones
+      for e,p in ipairs(corazonest) do
         love.graphics.draw(sprites.corazon, p.x, p.x, nil, 0.5, nil, sprites.corazon:getWidth()/2, sprites.corazon:getHeight()/2)
       end
       

@@ -7,11 +7,14 @@ function crearCorazon()
   corazonCreado = true
   --Obtener los atributos para el corazon
     corazon = {}
+    
+    --para generar un corazon en un lugar random del mapa
     corazon.x = math.random(0, love.graphics.getWidth())
     corazon.y = math.random(0, love.graphics.getHeight())
-    corazon.contador = 10
+
+    corazon.agarrado = false
   
-    
+    table.insert(corazonest, corazon)
 end
 
---Funcion para generar un corazon en un lugar random del mapa
+
