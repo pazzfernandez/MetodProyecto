@@ -235,8 +235,23 @@ function love.update(dt)
       menu:actualizar(dt)
       
     end
-
-
+    
+    --itera sobre la tabla de corazones del mapa
+    for e,p in ipairs(corazonest) do
+        
+		--Si el jugador toca uno de los corazones
+        if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 50 then
+          
+          --Si los corazones son mas de uno
+          if corazones < 3 then
+            --Se añade uno
+            corazones = corazones + 1
+          end 
+           
+        --Elimina el corazon para que no se sigan aumentando vidas
+        p.agarrado = true
+        end
+    end
 	
 	--itera sobre la tabla de zombies y el movimiento que deben hacer respecto a la posicion del jugador
     for i,z in ipairs(zombies) do
@@ -269,14 +284,20 @@ function love.update(dt)
               --Destruye todos los objetos zombie
               for i,z in ipairs(zombies) do
                   zombies[i] = nil
-                  estadoDelJuego = 1
-          --Coloca al jugador de nuevo al centro
+
+            end
+            
+            for e, p in ipairs(corazonest) do
+              corazonest[e] = nil
+              
+            --Coloca al jugador de nuevo al centro
                   jugador.x = love.graphics.getWidth()/2
                   jugador.y = love.graphics.getHeight()/2
-              end
+                  estadoDelJuego = 1
           end
         end
     end
+  end
 	
   --Obtiene la posicion del mouse para el cambio de sprite del mismo
   cx, cy = love.mouse.getPosition()
@@ -313,6 +334,14 @@ function love.update(dt)
         local z = zombies[i]
         if z.muerto == true then
             table.remove(zombies, i)
+        end
+    end
+    
+    --Remueve los corazones que han sido agarrados por el jugador
+    for i=#corazonest,1,-1 do
+        local c = corazonest[i]
+        if c.agarrado == true then
+            table.remove(corazonest, i)
         end
     end
 
