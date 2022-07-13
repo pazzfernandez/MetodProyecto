@@ -287,7 +287,7 @@ function love.update(dt)
 	--Remueve las balas que han salido de la pantalla
     for i=#balas, 1, -1 do
         local b = balas[i]
-        if b.x < 0 or b.y < 0 or b.x > love.graphics.getWidth() or b.y > love.graphics.getHeight() then
+        if b.x < 0-1000 or b.y < 0-1000 or b.x > love.graphics.getWidth()+1000 or b.y > love.graphics.getHeight()+1000 then
             table.remove(balas, i)
         end
     end
