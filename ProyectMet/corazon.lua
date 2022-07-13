@@ -4,7 +4,7 @@ math.randomseed(os.time())
 --Funcion para crear un corazon
 function crearCorazon()
   
-  corazonCreado = true
+
   --Obtener los atributos para el corazon
     corazon = {}
     

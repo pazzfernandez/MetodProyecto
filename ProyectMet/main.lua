@@ -53,6 +53,10 @@ function love.load()
     musicaReproduciendose = true
     musicaOnOff = 'On'
     
+    --Contador para los corazones que aparecen en el mapa
+    contador = 10
+    adidorTiempo = 1
+    
     if musicaReproduciendose == false then
       musicaOnOff = 'Off'
     end
@@ -320,7 +324,7 @@ function love.update(dt)
         end
     end
   
-    contador = 10
+    
 	--Crea enemigos nuevos cada tantos segundos
     if estadoDelJuego == 2 then
         temporizador = temporizador - dt
@@ -333,8 +337,10 @@ function love.update(dt)
             --Cada 10 enemigos, generar un corazon en un lado random del mapa
             if contador == 0 then
               crearCorazon()
-              contador = 10
-              corazonCreado = true
+              adidorTiempo = adidorTiempo * 10
+              contador = 10 + adidorTiempo
+              
+
             end
             
         end
@@ -415,11 +421,16 @@ function love.draw()
       
           --Musica para el menu principal
           love.audio.play(musicaIntro)
-          if not musicaIntro:isPlaying( ) then
+          if not musicaIntro:isPlaying() then
             love.audio.play(musicaIntro)
           end
       
-      elseif estadoDelJuego == 2 then
+    elseif estadoDelJuego == 2 then
+      
+      --Dibuja los corazones
+      for e,p in ipairs(corazonest) do
+        love.graphics.draw(sprites.corazon, p.x, p.x, nil, 0.5, nil, sprites.corazon:getWidth()/2, sprites.corazon:getHeight()/2)
+      end
     
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
@@ -434,10 +445,7 @@ function love.draw()
           love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
       end
       
-       --Dibuja los corazones
-      for e,p in ipairs(corazonest) do
-        love.graphics.draw(sprites.corazon, p.x, p.x, nil, 0.5, nil, sprites.corazon:getWidth()/2, sprites.corazon:getHeight()/2)
-      end
+       
       
 
       if musicaReproduciendose == true then
