@@ -195,6 +195,23 @@ function love.update(dt)
             seDesplaza = true 
         end
         -------------------
+        
+          --itera sobre la tabla de corazones del mapa
+          for e,p in ipairs(corazonest) do
+                
+          --Si el jugador toca uno de los corazones
+              if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 30 then
+                print(e) -- PORQUE SOLO FUNCIONA CUANDO SE AGARRA EL SEGUNDO DE LOS CORAZONES????
+                --Si los corazones son mas de uno
+                if corazones < 3 then
+                  --Se añade uno
+                  corazones = corazones + 1
+                end 
+                   
+              --Elimina el corazon para que no se sigan aumentando vidas
+              p.agarrado = true
+            end
+        end
 
         --Activa la pausa
         if(love.keyboard.isDown("escape")) then
@@ -236,22 +253,7 @@ function love.update(dt)
       
     end
     
-    --itera sobre la tabla de corazones del mapa
-    for e,p in ipairs(corazonest) do
-        
-		--Si el jugador toca uno de los corazones
-        if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 50 then
-          
-          --Si los corazones son mas de uno
-          if corazones < 3 then
-            --Se añade uno
-            corazones = corazones + 1
-          end 
-           
-        --Elimina el corazon para que no se sigan aumentando vidas
-        p.agarrado = true
-        end
-    end
+
 	
 	--itera sobre la tabla de zombies y el movimiento que deben hacer respecto a la posicion del jugador
     for i,z in ipairs(zombies) do
@@ -279,7 +281,10 @@ function love.update(dt)
             
             --Dormir al programa por 1 seg mientras suena el efecto
             love.timer.sleep(1)
+            contador = 10
+            adidorTiempo = 1
             estadoDelJuego = 1
+            
             
               --Destruye todos los objetos zombie
               for i,z in ipairs(zombies) do
@@ -289,12 +294,12 @@ function love.update(dt)
             
             for e, p in ipairs(corazonest) do
               corazonest[e] = nil
-              
+            end
             --Coloca al jugador de nuevo al centro
                   jugador.x = love.graphics.getWidth()/2
                   jugador.y = love.graphics.getHeight()/2
                   estadoDelJuego = 1
-          end
+          
         end
     end
   end
@@ -458,7 +463,7 @@ function love.draw()
       
       --Dibuja los corazones
       for e,p in ipairs(corazonest) do
-        love.graphics.draw(sprites.corazon, p.x, p.x, nil, 0.5, nil, sprites.corazon:getWidth()/2, sprites.corazon:getHeight()/2)
+        love.graphics.draw(sprites.corazon, p.x, p.x, nil, 0.75, nil, sprites.corazon:getWidth()/2, sprites.corazon:getHeight()/2)
       end
     
     --Dibuja al jugador en la pantalla
