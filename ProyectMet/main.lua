@@ -245,8 +245,8 @@ function love.update(dt)
           for e,p in ipairs(corazonest) do
                 
           --Si el jugador toca uno de los corazones
-              if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 30 then
-                print(e) -- PORQUE SOLO FUNCIONA CUANDO SE AGARRA EL SEGUNDO DE LOS CORAZONES????
+              if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 60 then
+                
                 --Si los corazones son mas de uno
                 if corazones < 3 then
                   --Se añade uno
