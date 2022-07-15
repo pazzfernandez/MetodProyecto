@@ -2,6 +2,7 @@ zombie = require "zombie"
 Menu = require "menu"
 config = require "config"
 Pausa = require "pausa"
+ConfigSonido = require "configSonido"
 corazon = require "corazon"
 
 
@@ -83,75 +84,119 @@ function love.load()
     corazonest = {}
 	
 	--Otras variables necesarias
-    estadoDelJuego = 1
-    puntaje = 0
-    tiempoMax = 2
-    temporizador = tiempoMax
-    nivelActual = 1
-    estadoPausa = false
+  estadoDelJuego = 1
+  puntaje = 0
+  tiempoMax = 2
+  temporizador = tiempoMax
+  nivelActual = 1
+  estadoPausa = false
+  estadoConfiguracionSonido = false
+  volumenMusica = 1
+  volumenEfectos = 1
 
     enfriamientoDesplazamiento = 0
     tiempoDesplazandoce = 0
     seDesplaza = false
 
-      pausa = Pausa.new()
-      pausa:añadirItem{
-      nombre = 'Reanudar',
-      accion = function()
-        estadoPausa = false
-      end
-    }
-    --Boton para parar o reproducir la musica
+    pausa = Pausa.new()
     pausa:añadirItem{
-      nombre = 'Musica',--.. musicaOnOff,
-      accion = function()
-        if musicaReproduciendose == true then
-          musicaReproduciendose = false
-        else
-          musicaReproduciendose = true
-        end
-      end
-    }
-    pausa:añadirItem{
-      nombre = 'Salir',
-      accion = function()
-        love.event.quit(0)
-      end
-    }
-    
-    if estadoDelJuego == 1 then
-      menu = Menu.new()
-      menu:añadirItem{
-      nombre = 'Jugar',
-      accion = function()
-        estadoDelJuego = 2
-        tiempoMax = 2
-        temporizador = tiempoMax
-        puntaje = 0
-        
-         --Variable de vidas del jugador
-        corazones = 3
-      end
-    }
-    menu:añadirItem{
-      nombre = 'Salir',
-      accion = function()
-        love.event.quit(0)
-      end
-    }
-
-    --Boton para parar o reproducir la musica
-    menu:añadirItem{
-      nombre = 'Musica',--.. musicaOnOff,
-      accion = function()
-        if musicaReproduciendose == true then
-          musicaReproduciendose = false
-        else
-          musicaReproduciendose = true
-        end
-      end
-    }
+    nombre = 'Reanudar',
+    accion = function()
+      estadoPausa = false
     end
+  }
+  --Boton para parar o reproducir la musica
+  pausa:añadirItem{
+    nombre = 'Sonido',--Configuracion de sonido
+    accion = function()
+      estadoConfiguracionSonido = true
+    end
+  }
+  pausa:añadirItem{
+    nombre = 'Salir',
+    accion = function()
+      love.event.quit(0)
+    end
+  }
+  
+  configSonido = ConfigSonido.new()
+  configSonido:añadirItem{
+    nombre = '<musica:     >',
+    bajarVolumen = function()
+      if volumenMusica > .1 then
+        volumenMusica = volumenMusica - .2
+        musicaJuego:setVolume(volumenMusica)
+      end
+    end,
+    subirVolumen = function()
+      if volumenMusica < 1 then
+        volumenMusica = volumenMusica + .2
+        musicaJuego:setVolume(volumenMusica)
+      end
+    end
+  }
+  configSonido:añadirItem{
+    nombre = '<efectos:     >',
+    bajarVolumen = function()
+      if volumenEfectos > .1 then
+        volumenEfectos = volumenEfectos - .2
+        sonidoEfectoDisparo:setVolume(volumenEfectos)
+        sonidoPerder:setVolume(volumenEfectos)
+        love.audio.stop(sonidoEfectoDisparo)
+        love.audio.play(sonidoEfectoDisparo)
+      end
+    end,
+    subirVolumen = function()
+      if volumenEfectos < 1 then
+        volumenEfectos = volumenEfectos + .2
+        sonidoEfectoDisparo:setVolume(volumenEfectos)
+        sonidoPerder:setVolume(volumenEfectos)
+        love.audio.stop(sonidoEfectoDisparo)
+        love.audio.play( sonidoEfectoDisparo)     
+      end
+    end
+  }
+  configSonido:añadirItem{
+    nombre = 'volver',
+    accion = function()
+      estadoConfiguracionSonido = false
+    end
+  }
+
+
+  if estadoDelJuego == 1 then
+    menu = Menu.new()
+    menu:añadirItem{
+    nombre = 'Jugar',
+    accion = function()
+      estadoDelJuego = 2
+      tiempoMax = 2
+      temporizador = tiempoMax
+      puntaje = 0
+      
+       --Variable de vidas del jugador
+      corazones = 3
+    end
+  }
+  menu:añadirItem{
+    nombre = 'Salir',
+    accion = function()
+      love.event.quit(0)
+    end
+  }
+
+  --Boton para parar o reproducir la musica
+  menu:añadirItem{
+    nombre = 'Musica',--.. musicaOnOff,
+    accion = function()
+      if musicaReproduciendose == true then
+        musicaReproduciendose = false
+      else
+        musicaReproduciendose = true
+      end
+    end
+  }
+  end
 end
 
 function love.update(dt)
@@ -242,16 +287,16 @@ function love.update(dt)
         -------
 
 
-    elseif estadoDelJuego == 1 then
-      if musicaReproduciendose == false then
-        love.audio.stop(musicaIntro)
-        
-      elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
-        --funciona bien xd
+      elseif estadoDelJuego == 1 then
+        if musicaReproduciendose == false then
+          love.audio.stop(musicaIntro)
+          
+        elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
+          --funciona bien xd
+        end
+        menu:actualizar(dt)
+        configSonido:actualizar(dt)
       end
-      menu:actualizar(dt)
-      
-    end
     
 
 	
@@ -286,8 +331,8 @@ function love.update(dt)
             estadoDelJuego = 1
             
             
-              --Destruye todos los objetos zombie
-              for i,z in ipairs(zombies) do
+            --Destruye todos los objetos zombie
+            for i,z in ipairs(zombies) do
                   zombies[i] = nil
 
             end
@@ -423,10 +468,8 @@ function love.update(dt)
   --SI LA PAUSA ESTA ACTIVA
   else
     pausa:actualizar(dt)
+    configSonido:actualizar(dt)
 
-    if(love.keyboard.isDown("return")) then
-      estadoPausa = false
-    end
   end
 end
 
@@ -520,15 +563,36 @@ function love.draw()
     end
 
      --Dibuja pantalla de pausa
-     if estadoPausa then         
+     if estadoPausa then
       love.graphics.draw(sprites.fondoPausa, 10, -10, 0, 0.88, 0.7) --Fondo
-      love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
+
+      if estadoConfiguracionSonido == false then    
+        love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
+        pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
+      end
+      if estadoConfiguracionSonido then
+        love.graphics.printf("configuracion de sonido", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0)
+        configSonido:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
+       
+        if volumenMusica == 1 then love.graphics.printf("*****", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.8 then love.graphics.printf("**** ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.6 then love.graphics.printf("***  ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.4 then love.graphics.printf("**   ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.2 then love.graphics.printf("*    ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+
+        if volumenEfectos == 1 then love.graphics.printf("*****", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.8 then love.graphics.printf("**** ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.6 then love.graphics.printf("***  ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.4 then love.graphics.printf("**   ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.2 then love.graphics.printf("*    ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+      end 
+
       love.graphics.draw(dibujos[math.floor(corazones)], 725, 485, 0, -.6, .6) --Dibuja corazones en menu
       love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-70, love.graphics.getWidth()+670, "right", 0, .5, .5) --Puntaje en menu
-    
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
-      pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
+      
     end
+    ------
     
 end
 
@@ -553,7 +617,11 @@ function love.keypressed(key)
     
     menu:keypressed(key)
   else if estadoDelJuego == 2 and estadoPausa == true then
+    if estadoConfiguracionSonido then
+      configSonido:keypressed(key)
+    else
     pausa:keypressed(key)
+    end
   end
 end
 end
