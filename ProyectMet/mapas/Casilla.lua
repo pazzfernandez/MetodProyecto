@@ -1,5 +1,7 @@
 --Objeto Casilla
 
+Object = require("librerias/classic/classic")
+
 Casilla = Object:extend() --Crea la clase Casilla que hereda de la clase Object, obtenida mediante la librería classic
 
 function Casilla:new(f,c)  --constructor 

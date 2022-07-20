@@ -6,7 +6,9 @@
 --    -> en love.draw(): 
 --        llamar a la funcion dibujarLaberinto(grilla, 10) pasando como argumento la tabla devuelta en iniciarLaberinto y el tamaño en el que se dibujaran las casillas
 
-require("nivel/Casilla")  --requiere la clase Casilla contenida en el archivo Casilla.lua
+require("mapas/Casilla")  --requiere la clase Casilla contenida en el archivo Casilla.lua
+imgPared = love.graphics.newImage('sprites/pared.jpg')
+  imgCamino = love.graphics.newImage('sprites/camino.png')
 
 function iniciarLaberinto(altura, base) --esta función inicializa la tabla grilla que será donde se 
   --almacenen los valores numericos que representen las paredes y caminos del laberinto
@@ -349,18 +351,16 @@ function hayCasillas() --funcion que revisa si hay casillas que aun no han sido 
   return false
 end
 
-function dibujarLaberinto(grilla,dimCasilla) 
+function dibujarLaberinto(grilla,dimCasilla)
   for i=1,grilla.altura do  
     for j=1,grilla.base do
       if grilla[i][j].tipo ~= 0 then 
-        love.graphics.setColor(237, 207, 77, 0.8) 
-      else
-        love.graphics.setColor(255, 0, 0, 1) 
+        love.graphics.draw(imgPared, j * dimCasilla, i * dimCasilla, 0, dimCasilla, dimCasilla)
       end
       if grilla[i][j].visitada and grilla[i][j].tipo == 0  then
-        love.graphics.setColor(1, 0, 1)
+        love.graphics.draw(imgCamino, j * dimCasilla, i * dimCasilla, 0, dimCasilla, dimCasilla)
       end
-      love.graphics.rectangle("fill", j * dimCasilla, i * dimCasilla, dimCasilla, dimCasilla)
+      --love.graphics.rectangle("fill", j * dimCasilla, i * dimCasilla, dimCasilla, dimCasilla)
     end
   end  
 end
