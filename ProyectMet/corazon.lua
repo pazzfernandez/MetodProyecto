@@ -9,8 +9,8 @@ function crearCorazon()
     corazon = {}
     
     --para generar un corazon en un lugar random del mapa
-    corazon.x = math.random(150, love.graphics.getWidth()-150)
-    corazon.y = math.random(150, love.graphics.getHeight()-150)
+    corazon.x = math.random(250, love.graphics.getWidth()-250)
+    corazon.y = math.random(250, love.graphics.getHeight()-250)
 
     corazon.agarrado = false
   

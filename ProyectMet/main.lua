@@ -245,7 +245,7 @@ function love.update(dt)
           for e,p in ipairs(corazonest) do
                 
           --Si el jugador toca uno de los corazones
-              if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 60 then
+              if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 20 then
                 
                 --Si los corazones son mas de uno
                 if corazones < 3 then
