@@ -7,6 +7,9 @@ Pausa = require "pausa"
 function love.load()
   math.randomseed(os.time())
   
+  --Pantalla completa segun la resolucion del monitor actual
+  ventana = love.window.setMode(0, 0)
+
   --Importar la camara de la libreria
   camara = require 'librerias/camera'
   cam = camara()
@@ -402,7 +405,7 @@ function love.draw()
           
           --love.graphics.setNewFont("llpixel/LLPIXEL3.TTF", 90)
           love.graphics.setNewFont("pixelmania/Pixelmania.TTF", 45)
-          love.graphics.printf("MATASUEGRAS", 0, love.graphics.getHeight()-525, love.graphics.getWidth(), "center")
+          love.graphics.printf("MATASUEGRAS", 0, love.graphics.getHeight()-(love.graphics.getHeight()/4)*3, love.graphics.getWidth(), "center")
           
           if musicaJuego:isPlaying() then
             love.audio.stop(musicaJuego)
@@ -529,6 +532,4 @@ function distanciaEntre(x1, y1, x2, y2)
     return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
 end
 
-function nivelNuevo(nivelActual)
-  --A implementar
-end
+
