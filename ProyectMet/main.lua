@@ -457,19 +457,19 @@ function love.draw()
     if estadoDelJuego == 2 and estadoPausa == false then
     --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
       if corazones ~=0 then
-        love.graphics.draw(dibujos[math.floor(corazones)], 625, 15)
+        love.graphics.draw(dibujos[math.floor(corazones)], love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7, 15)
       end
       
     --Dibuja el medidor de energia
       if enfriamientoDesplazamiento >= 0 then
-        love.graphics.draw(dibujosEnergia[math.floor(enfriamientoDesplazamiento+1)], 625, 90)
+        love.graphics.draw(dibujosEnergia[math.floor(enfriamientoDesplazamiento+1)],love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7 , 90)
       elseif enfriamientoDesplazamiento < 0 then
-        love.graphics.draw(dibujosEnergia[math.floor(1)], 625, 90)
+        love.graphics.draw(dibujosEnergia[math.floor(1)],love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7 , 90)
       end
 
     --Dibuja el puntaje en pantalla
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
-      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-100, love.graphics.getWidth(), "center")
+      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-love.graphics.getHeight()/6, love.graphics.getWidth(), "center")
     end
 
      --Dibuja pantalla de pausa
