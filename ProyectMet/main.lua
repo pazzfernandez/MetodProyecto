@@ -16,8 +16,12 @@ function love.load()
   
   --Importar generador de laberinto
   require("mapas/generador-de-laberinto")
+  
+  labX = 101
+  labY = 101
+  
   --Crea grilla para laberinto
-  mapa1 = iniciarLaberinto(101,101)
+  mapa1 = iniciarLaberinto(labY, labX)
   
   --Crea una tabla con todos los dibujos de los corazones
   dibujos = {}
@@ -38,7 +42,7 @@ function love.load()
 	
 	--Cargar los assets a utilizar
   sprites = {}
-  sprites.fondo = love.graphics.newImage('sprites/fondo.png')
+
   sprites.fondoMenu = love.graphics.newImage('sprites/fondoMenu.png')
   sprites.fondoPausa = love.graphics.newImage('sprites/fondoPausa.png')
   sprites.bala = love.graphics.newImage('sprites/bala.png')
@@ -389,8 +393,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	--Dibuja el fondo
-  love.graphics.draw(sprites.fondo, 0, 0)
+	
 	 
     --Sacar el tamaño de la ventana
     local anchoVentana = love.graphics.getWidth()
