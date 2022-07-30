@@ -457,7 +457,7 @@ function love.draw()
     end
     cam:detach()
     
-    if estadoDelJuego == 2 and estadoPausa == false then
+    if estadoDelJuego == 2 then
     --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
       if corazones ~=0 then
         love.graphics.draw(dibujos[math.floor(corazones)], love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7, 15)
@@ -477,10 +477,8 @@ function love.draw()
 
      --Dibuja pantalla de pausa
      if estadoPausa then         
-      love.graphics.draw(sprites.fondoPausa, 10, -10, 0, 0.88, 0.7) --Fondo
-      love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
-      love.graphics.draw(dibujos[math.floor(corazones)], 725, 485, 0, -.6, .6) --Dibuja corazones en menu
-      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-70, love.graphics.getWidth()+670, "right", 0, .5, .5) --Puntaje en menu
+      love.graphics.draw(sprites.fondoPausa, -200, -250, 0, 4, 4) --Fondo
+      love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-600, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
     
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
       pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
