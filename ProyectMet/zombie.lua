@@ -18,16 +18,16 @@ function crearZombie()
     local lado = math.random(1, 4)
     if lado == 1 then
         zombie.x = -30
-        zombie.y = math.random(0, love.graphics.getHeight())
+        zombie.y = math.random(0, tamCasillas * labY)
     elseif lado == 2 then
-        zombie.x = love.graphics.getWidth() + 30
-        zombie.y = math.random(0, love.graphics.getHeight())
+        zombie.x = tamCasillas * labX + 30
+        zombie.y = math.random(0, tamCasillas * labY)
     elseif lado == 3 then
-        zombie.x = math.random(0, love.graphics.getWidth())
+        zombie.x = math.random(0, tamCasillas * labX)
         zombie.y = -30
     elseif lado == 4 then
-        zombie.x = math.random(0, love.graphics.getWidth())
-        zombie.y = love.graphics.getHeight() + 30
+        zombie.x = math.random(0, tamCasillas * labX)
+        zombie.y = tamCasillas * labY + 30
     end
 
     table.insert(zombies, zombie)
