@@ -66,6 +66,9 @@ function love.load()
   cuerpoJug.alto = 100
   cuerpoJug.ancho = 100
   
+  jugX = jugador.x
+  jugY = jugador.y
+  
   --ACAAAAAAAAAAAAAAAAAAAaaa ACTIVAR MUSICA
   musicaReproduciendose = false 
   musicaOnOff = 'Off'
@@ -177,45 +180,47 @@ function love.update(dt)
   if estadoPausa == false then --ESTADO 2 SOLO FUNCIONA SI NO ESTA EN PAUSA
     if estadoDelJuego == 2 then
         if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and jugador.x < (tamCasillas * labX) then
-            jugador.x = jugador.x + jugador.velocidad*dt
+            jugX = jugador.x + jugador.velocidad*dt
         end
         if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and jugador.x > 0 then
-            jugador.x = jugador.x - jugador.velocidad*dt
+            jugX= jugador.x - jugador.velocidad*dt
         end
         if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and jugador.y > 0 then
-            jugador.y = jugador.y - jugador.velocidad*dt
+            jugY = jugador.y - jugador.velocidad*dt
         end
         if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and jugador.y < (tamCasillas * labY) then
-            jugador.y = jugador.y + jugador.velocidad*dt
+            jugY = jugador.y + jugador.velocidad*dt
         end
         
         --Desplazamiento rapido
         if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0  and jugador.x < (tamCasillas * labX) then
-          jugador.x = jugador.x + jugador.velocidad *dt
+          jugX = jugador.x + jugador.velocidad *dt
           seDesplaza = true
         end
 
         if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.x > 0 then
-        jugador.x = jugador.x - jugador.velocidad *dt
+        jugX = jugador.x - jugador.velocidad *dt
         seDesplaza = true    
         end
 
         if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.y > 0 then
-            jugador.y = jugador.y - jugador.velocidad *dt
+            jugY = jugador.y - jugador.velocidad *dt
             seDesplaza = true
         end
 
         if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.y < (tamCasillas * labY) then
-            jugador.y = jugador.y + jugador.velocidad *dt
+            jugY = jugador.y + jugador.velocidad *dt
             seDesplaza = true 
         end
         
         cuerpoJug.x=jugador.x-50
         cuerpoJug.y=jugador.y-50
         
-        
+        if revisarColisiones(cuerpoJug)==true then
+          jugador.x = jugX
+          jugador.y = jugY
+        end
         -------------------
-
         --Activa la pausa
         if(love.keyboard.isDown("escape")) then
           estadoPausa = true
@@ -440,9 +445,9 @@ function love.draw()
         
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
-    
+      
       love.graphics.rectangle("line", cuerpoJug.x, cuerpoJug.y, cuerpoJug.ancho, cuerpoJug.alto)
-    
+      
     --Dibuja a los zombies 
       for i,z in ipairs(zombies) do
           love.graphics.draw(sprites.zombie, z.x, z.y, zombieJugadorAngulo(z), nil, nil, sprites.zombie:getWidth()/2, sprites.zombie:getHeight()/2)
@@ -547,6 +552,73 @@ function distanciaEntre(x1, y1, x2, y2)
     return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
 end
 
-function revisarColisiones(cuerpoJug)
+function revisarColisiones(cuerpoRecibido)
+  --Posicion i y j del cuerpo respecto a la casilla en dónde se encuentra
+  local jj = (cuerpoRecibido.x/tamCasillas) - 0.3 
+  local ii = (cuerpoRecibido.y/tamCasillas) + 0.4 
+--  print("fila, i = ",math.floor(ii), " - columna, j = ",math.floor(jj))
   
+ -- local alto = 100
+  --local ancho = 100
+  
+  --Lineas del cuerpo para revisar colision
+  --local cuerpo = {}
+  --cuerpo.arr = cuerpoRecibido.y
+  --cuerpo.aba = cuerpoRecibido.y + ancho
+  --cuerpo.izq = cuerpoRecibido.x
+  --cuerpo.der = cuerpoRecibido.x + alto
+  
+  --Líneas de la casilla para revisar colision
+  --local casilla = {}
+  --casilla.arr = ii
+--  casilla.aba = ii + tamCasillas
+--  casilla.izq = jj
+--  casilla.der = jj + tamCasillas
+  
+  --print("Cuerpo: izq:",cuerpo.izq," - der:",cuerpo.der," - arr:",cuerpo.arr," - abaj:", cuerpo.aba)
+  --print("Casilla: izq:",casilla.izq," - der:",casilla.der," - arr:",casilla.arr," - abaj:", casilla.aba)
+  
+--  if mapa1[math.floor(ii)][math.floor(jj)].tipo == 0 then
+--    print("es camino")
+--  else 
+--    print("ES PARED")
+--  end
+  
+--  if  casilla.der > cuerpo.izq  and
+--      cuerpo.der  > casilla.izq and
+--      cuerpo.aba  > casilla.arr and
+--      casilla.aba > cuerpo.arr then
+--    print("")
+--  end
+  
+  --print("Marrón - i:",ii," j:",jj)
+  local jr = ( (cuerpoRecibido.x+cuerpoRecibido.ancho)/tamCasillas ) - 0.3
+  --print("Rojo - i:", ii," j:",jr)
+  local iv = ( (cuerpoRecibido.y+cuerpoRecibido.alto)/tamCasillas ) + 0.4
+  --print("Verde - i:", iv," j:",jj)
+  --print("Naranja - i:",iv," j:",jr)
+
+  --esquinas = {}
+  --esquinas.arrIzq = {ii, jj}
+  --esquinas.arrDer = {ii, jr}
+  --esquinas.abaIzq = {iv, jj}
+  --esquinas.abaDer = {iv, jr}
+  
+  --if ii==iv and jj==jr then
+    --están en la misma casilla
+  --end
+  
+  if  mapa1[math.floor(ii)][math.floor(jj)].tipo == 0 and
+      mapa1[math.floor(ii)][math.floor(jr)].tipo == 0 and
+      mapa1[math.floor(iv)][math.floor(jj)].tipo == 0 and
+      mapa1[math.floor(iv)][math.floor(jr)].tipo == 0 then
+    --print("Todos en camino")
+    return true
+  else
+    --print("Marron: ",mapa1[math.floor(ii)][math.floor(jj)].tipo)
+    --print("Rojo: ",mapa1[math.floor(ii)][math.floor(jr)].tipo)
+    --print("Verde: ",mapa1[math.floor(iv)][math.floor(jj)].tipo)
+    --print("Naranja: ",mapa1[math.floor(iv)][math.floor(jr)].tipo)
+    return false
+  end
 end

@@ -360,7 +360,6 @@ function dibujarLaberinto(grilla,dimCasilla)
       if grilla[i][j].visitada and grilla[i][j].tipo == 0  then
         love.graphics.draw(imgCamino, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0, dimCasilla, dimCasilla)
       end
-      --love.graphics.rectangle("fill", j * dimCasilla, i * dimCasilla, dimCasilla, dimCasilla)
     end
   end  
 end
