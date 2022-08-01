@@ -20,6 +20,8 @@ function love.load()
   labX = 101
   labY = 101
   
+  tamCasillas = 360
+  
   --Crea grilla para laberinto
   mapa1 = iniciarLaberinto(labY, labX)
   
@@ -168,36 +170,36 @@ function love.update(dt)
 
   if estadoPausa == false then --ESTADO 2 SOLO FUNCIONA SI NO ESTA EN PAUSA
     if estadoDelJuego == 2 then
-        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) then
+        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and jugador.x < (tamCasillas * labX) then
             jugador.x = jugador.x + jugador.velocidad*dt
         end
-        if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) then
+        if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and jugador.x > 0 then
             jugador.x = jugador.x - jugador.velocidad*dt
         end
-        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) then
+        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and jugador.y > 0 then
             jugador.y = jugador.y - jugador.velocidad*dt
         end
-        if (love.keyboard.isDown("s") or love.keyboard.isDown("down"))then
+        if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and jugador.y < (tamCasillas * labY) then
             jugador.y = jugador.y + jugador.velocidad*dt
         end
         
         --Desplazamiento rapido
-        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0  then
+        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0  and jugador.x < (tamCasillas * labX) then
           jugador.x = jugador.x + jugador.velocidad *dt
           seDesplaza = true
         end
 
-        if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 then
+        if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.x > 0 then
         jugador.x = jugador.x - jugador.velocidad *dt
         seDesplaza = true    
         end
 
-        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 then
+        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.y > 0 then
             jugador.y = jugador.y - jugador.velocidad *dt
             seDesplaza = true
         end
 
-        if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 then
+        if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.y < (tamCasillas * labY) then
             jugador.y = jugador.y + jugador.velocidad *dt
             seDesplaza = true 
         end
@@ -298,7 +300,7 @@ function love.update(dt)
 	--Remueve las balas que han salido de la pantalla
     for i=#balas, 1, -1 do
         local b = balas[i]
-        if b.x < 0 or b.y < 0 or b.x > love.graphics.getWidth() or b.y > love.graphics.getHeight() then
+        if (b.x < 0 or b.y < 0 or b.x > (tamCasillas * labX) or b.y > (tamCasillas * labY)) or (i>40) then
             table.remove(balas, i)
         end
     end
@@ -423,7 +425,7 @@ function love.draw()
       elseif estadoDelJuego == 2 then
         
         --Dibuja el laberinto
-        dibujarLaberinto(mapa1, 160)
+        dibujarLaberinto(mapa1, tamCasillas)
         
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
@@ -457,7 +459,7 @@ function love.draw()
     end
     cam:detach()
     
-    if estadoDelJuego == 2 and estadoPausa == false then
+    if estadoDelJuego == 2  then
     --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
       if corazones ~=0 then
         love.graphics.draw(dibujos[math.floor(corazones)], love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7, 15)
@@ -477,10 +479,8 @@ function love.draw()
 
      --Dibuja pantalla de pausa
      if estadoPausa then         
-      love.graphics.draw(sprites.fondoPausa, 10, -10, 0, 0.88, 0.7) --Fondo
-      love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
-      love.graphics.draw(dibujos[math.floor(corazones)], 725, 485, 0, -.6, .6) --Dibuja corazones en menu
-      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-70, love.graphics.getWidth()+670, "right", 0, .5, .5) --Puntaje en menu
+      love.graphics.draw(sprites.fondoPausa, -200, -250, 0, 4, 4) --Fondo
+      love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-(love.graphics.getHeight()/6)*4, love.graphics.getWidth()-(love.graphics.getWidth()/2)+550, "center", 0, 1, 1, -100, 0) --Titulo Pausa
     
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
       pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
