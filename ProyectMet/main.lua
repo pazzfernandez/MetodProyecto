@@ -57,10 +57,16 @@ function love.load()
   jugador.xF = (love.graphics.getWidth() / 2)  
   jugador.yF = love.graphics.getHeight() / 2
   jugador.velocidad = 180
-    
-    
-  musicaReproduciendose = true 
-  musicaOnOff = 'On'
+  
+  cuerpoJug = {}
+  cuerpoJug.x = (love.graphics.getWidth() / 2)-50
+  cuerpoJug.y = (love.graphics.getHeight() / 2)-50
+  cuerpoJug.alto = 100
+  cuerpoJug.ancho = 100
+  
+  --ACAAAAAAAAAAAAAAAAAAAaaa ACTIVAR MUSICA
+  musicaReproduciendose = false 
+  musicaOnOff = 'Off'
     
   if musicaReproduciendose == false then
     musicaOnOff = 'Off'
@@ -201,6 +207,11 @@ function love.update(dt)
             jugador.y = jugador.y + jugador.velocidad *dt
             seDesplaza = true 
         end
+        
+        cuerpoJug.x=jugador.x-50
+        cuerpoJug.y=jugador.y-50
+        
+        
         -------------------
 
         --Activa la pausa
@@ -423,10 +434,12 @@ function love.draw()
       elseif estadoDelJuego == 2 then
         
         --Dibuja el laberinto
-        dibujarLaberinto(mapa1, 160)
+        dibujarLaberinto(mapa1, 390)
         
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
+    
+      love.graphics.rectangle("line", cuerpoJug.x, cuerpoJug.y, cuerpoJug.ancho, cuerpoJug.alto)
     
     --Dibuja a los zombies 
       for i,z in ipairs(zombies) do
@@ -440,7 +453,6 @@ function love.draw()
       
       
       
-
       if musicaReproduciendose == true then
         --Para la musica de la introduccion si esta sonando
         if musicaIntro:isPlaying() then
@@ -535,4 +547,6 @@ function distanciaEntre(x1, y1, x2, y2)
     return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
 end
 
-
+function revisarColisiones(cuerpoJug)
+  
+end

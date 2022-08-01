@@ -355,10 +355,10 @@ function dibujarLaberinto(grilla,dimCasilla)
   for i=1,grilla.altura do  
     for j=1,grilla.base do
       if grilla[i][j].tipo ~= 0 then 
-        love.graphics.draw(imgPared, j * dimCasilla, i * dimCasilla, 0, dimCasilla, dimCasilla)
+        love.graphics.draw(imgPared, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0, dimCasilla, dimCasilla)
       end
       if grilla[i][j].visitada and grilla[i][j].tipo == 0  then
-        love.graphics.draw(imgCamino, j * dimCasilla, i * dimCasilla, 0, dimCasilla, dimCasilla)
+        love.graphics.draw(imgCamino, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0, dimCasilla, dimCasilla)
       end
       --love.graphics.rectangle("fill", j * dimCasilla, i * dimCasilla, dimCasilla, dimCasilla)
     end
