@@ -7,7 +7,7 @@
 --        llamar a la funcion dibujarLaberinto(grilla, 10) pasando como argumento la tabla devuelta en iniciarLaberinto y el tamaño en el que se dibujaran las casillas
 
 require("mapas/Casilla")  --requiere la clase Casilla contenida en el archivo Casilla.lua
-imgPared = love.graphics.newImage('sprites/pared.jpg')
+imgPared = love.graphics.newImage('sprites/fondo2.jpg')
   imgCamino = love.graphics.newImage('sprites/camino.png')
 
 function iniciarLaberinto(altura, base) --esta función inicializa la tabla grilla que será donde se 

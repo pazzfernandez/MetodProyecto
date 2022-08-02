@@ -47,6 +47,7 @@ function love.load()
 
   sprites.fondoMenu = love.graphics.newImage('sprites/fondoMenu.png')
   sprites.fondoPausa = love.graphics.newImage('sprites/fondoPausa.png')
+  sprites.fondoJuego = love.graphics.newImage('sprites/fondo2.jpg')
   sprites.bala = love.graphics.newImage('sprites/bala.png')
   sprites.jugador = love.graphics.newImage('sprites/jugador_1.png')
   sprites.zombie = love.graphics.newImage('sprites/zombie.png')
@@ -419,8 +420,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	
-	 
+    
     --Sacar el tamaño de la ventana
     local anchoVentana = love.graphics.getWidth()
     local altoVentana = love.graphics.getHeight()
@@ -447,7 +447,7 @@ function love.draw()
           end
       
       elseif estadoDelJuego == 2 then
-        
+        love.graphics.draw(sprites.fondoJuego,0,0,0,1366,768)
         --Dibuja el laberinto
         dibujarLaberinto(mapa1, tamCasillas)
         
