@@ -17,10 +17,10 @@ function love.load()
   --Importar generador de laberinto
   require("mapas/generador-de-laberinto")
   
-  labX = 101
-  labY = 101
+  labX = 5
+  labY = 5
   
-  tamCasillas = 360
+  tamCasillas = 380
   
   --Crea grilla para laberinto
   mapa1 = iniciarLaberinto(labY, labX)
@@ -65,9 +65,6 @@ function love.load()
   cuerpoJug.y = (love.graphics.getHeight() / 2)-50
   cuerpoJug.alto = 100
   cuerpoJug.ancho = 100
-  
-  jugX = jugador.x
-  jugY = jugador.y
   
   --ACAAAAAAAAAAAAAAAAAAAaaa ACTIVAR MUSICA
   musicaReproduciendose = false 
@@ -179,38 +176,54 @@ function love.update(dt)
 
   if estadoPausa == false then --ESTADO 2 SOLO FUNCIONA SI NO ESTA EN PAUSA
     if estadoDelJuego == 2 then
-        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and jugador.x < (tamCasillas * labX) and revisarColisionesDerecha(cuerpoJug) then--and revisarColisiones(cuerpoJug,1) then--
+        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and math.floor(jugador.x+50) < ((tamCasillas * labX)+(1.3*tamCasillas)-5) then
+          if revisarColisionesDerecha(cuerpoJug) then
             jugador.x = jugador.x + jugador.velocidad*dt
+          end
         end
-        if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and jugador.x > 0 and revisarColisionesIzquierda(cuerpoJug) then--and revisarColisiones(cuerpoJug,2) then --
+      if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and math.floor(jugador.x-50) > (1.3*tamCasillas)+5 then
+          if  revisarColisionesIzquierda(cuerpoJug) then
             jugador.x = jugador.x - jugador.velocidad*dt
+          end
         end
-        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and jugador.y > 0 and revisarColisionesArriba(cuerpoJug) then--and revisarColisiones(cuerpoJug,3) then --
+        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and math.floor(jugador.y-50) > (0.6*tamCasillas)+5 then
+          if revisarColisionesArriba(cuerpoJug) then
             jugador.y = jugador.y - jugador.velocidad*dt
+          end
         end
-        if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and jugador.y < (tamCasillas * labY) and revisarColisionesAbajo(cuerpoJug) then--and revisarColisiones(cuerpoJug,4) then --
+        if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and math.floor(jugador.y+50) < ((tamCasillas * labY)+(0.6*tamCasillas)-5) then
+          if revisarColisionesAbajo(cuerpoJug) then
             jugador.y = jugador.y + jugador.velocidad*dt
+          end
         end
         
         --Desplazamiento rapido
-        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0  and jugador.x < (tamCasillas * labX) and revisarColisionesDerecha(cuerpoJug) then--and revisarColisiones(cuerpoJug,1) then--
-          jugador.x = jugador.x + jugador.velocidad *dt
-          seDesplaza = true
+        if (love.keyboard.isDown("d") or love.keyboard.isDown("right")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0  and  math.floor(jugador.x+50) < ((tamCasillas * labX)+(1.3*tamCasillas)-5) then
+          if revisarColisionesDerecha(cuerpoJug) then
+            jugador.x = jugador.x + jugador.velocidad *dt
+            seDesplaza = true
+          end
         end
 
-        if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.x > 0 and revisarColisionesIzquierda(cuerpoJug) then--and revisarColisiones(cuerpoJug,2) then --
-        jugador.x = jugador.x - jugador.velocidad *dt
-        seDesplaza = true    
+        if (love.keyboard.isDown("a") or love.keyboard.isDown("left")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and math.floor(jugador.x-50) > (1.3*tamCasillas)+5 then
+          if revisarColisionesIzquierda(cuerpoJug) then
+            jugador.x = jugador.x - jugador.velocidad *dt
+            seDesplaza = true    
+          end
         end
 
-        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.y > 0 and revisarColisionesArriba(cuerpoJug) then--and revisarColisiones(cuerpoJug,3) then --
+        if (love.keyboard.isDown("w") or love.keyboard.isDown("up")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and math.floor(jugador.y-50) > (0.6*tamCasillas)+5 then
+          if revisarColisionesArriba(cuerpoJug) then
             jugador.y = jugador.y - jugador.velocidad *dt
             seDesplaza = true
+          end
         end
 
-        if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and jugador.y < (tamCasillas * labY) and revisarColisionesAbajo(cuerpoJug) then--and revisarColisiones(cuerpoJug,4) then --
+        if (love.keyboard.isDown("s") or love.keyboard.isDown("down")) and (love.keyboard.isDown("space")) and enfriamientoDesplazamiento <= 0 and math.floor(jugador.y+50) < ((tamCasillas * labY)+(0.6*tamCasillas)-5) then
+          if revisarColisionesAbajo(cuerpoJug) then
             jugador.y = jugador.y + jugador.velocidad *dt
             seDesplaza = true 
+          end
         end
         
         cuerpoJug.x=jugador.x-50
@@ -441,7 +454,9 @@ function love.draw()
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
       
-      --love.graphics.rectangle("line", cuerpoJug.x, cuerpoJug.y, cuerpoJug.ancho, cuerpoJug.alto)
+      love.graphics.rectangle("line", cuerpoJug.x, cuerpoJug.y, cuerpoJug.ancho, cuerpoJug.alto)
+      love.graphics.circle("fill",(1.3*tamCasillas),(0.6*tamCasillas),1)
+      love.graphics.circle("fill",(2.3*tamCasillas),(0.6*tamCasillas),1)
       
     --Dibuja a los zombies 
       for i,z in ipairs(zombies) do
@@ -555,7 +570,10 @@ function revisarColisionesDerecha(cuerpoRecibido)
   local jIzq = math.floor( (cuerpoRecibido.x/tamCasillas)-0.3 )
   local n = 10
   
-  if (mapa1[iArr][jDer].tipo == 1 and mapa1[iAbaj][jDer].tipo == 1) then
+  if jDer==(labX+1) then 
+    return false
+    
+  elseif (mapa1[iArr][jDer].tipo == 1 and mapa1[iAbaj][jDer].tipo == 1) then
     return false
     
   elseif (mapa1[iArr][jDer].tipo == 1 and mapa1[iArr][jIzq].tipo == 0 and mapa1[iAbaj][jIzq].tipo == 0) or (mapa1[math.floor(iAbaj)][math.floor(jDer)].tipo == 1 and mapa1[iArr][jIzq].tipo == 0 and mapa1[iAbaj][jIzq].tipo == 0) then
@@ -580,7 +598,10 @@ function revisarColisionesIzquierda(cuerpoRecibido)
   local jIzq = math.floor( (cuerpoRecibido.x/tamCasillas)-0.3 )
   local n = 10
   
-  if (mapa1[iArr][jIzq].tipo == 1 and mapa1[iAbaj][jIzq].tipo == 1) then
+  if jIzq==0 then 
+    return false
+    
+  elseif (mapa1[iArr][jIzq].tipo == 1 and mapa1[iAbaj][jIzq].tipo == 1) then
     return false
     
   elseif (mapa1[iArr][jIzq].tipo == 1 and mapa1[iArr][jDer].tipo == 0 and mapa1[iAbaj][jDer].tipo == 0) or (mapa1[iAbaj][jIzq].tipo == 1 and mapa1[iArr][jDer].tipo == 0 and mapa1[iAbaj][jDer].tipo == 0) then
@@ -605,7 +626,10 @@ function revisarColisionesArriba(cuerpoRecibido)
   local jIzq = math.floor( (cuerpoRecibido.x/tamCasillas)-0.3 )
   local n =  10
   
-  if (mapa1[iArr][jDer].tipo == 1 and mapa1[iArr][jIzq].tipo == 1)  then
+  if iArr==0 then 
+    return false
+    
+  elseif (mapa1[iArr][jDer].tipo == 1 and mapa1[iArr][jIzq].tipo == 1)  then
     return false
     
   elseif (mapa1[iArr][jDer].tipo == 1 and mapa1[iAbaj][jDer].tipo == 0 and mapa1[iAbaj][jIzq].tipo == 0 ) or (mapa1[iArr][jIzq].tipo == 1 and mapa1[iAbaj][jDer].tipo == 0 and mapa1[iAbaj][jIzq].tipo == 0 ) then
@@ -630,7 +654,10 @@ function revisarColisionesAbajo(cuerpoRecibido)
   local jIzq = math.floor( (cuerpoRecibido.x/tamCasillas)-0.3 )
   local n = 10
   
-  if (mapa1[iAbaj][jDer].tipo == 1 and mapa1[iAbaj][jIzq].tipo == 1) then
+  if iAbaj==(labY+1) then 
+    return false
+    
+  elseif (mapa1[iAbaj][jDer].tipo == 1 and mapa1[iAbaj][jIzq].tipo == 1) then
     return false
     
   elseif (mapa1[iAbaj][jDer].tipo == 1 and mapa1[iArr][jDer].tipo == 0 and mapa1[iArr][jIzq].tipo == 0) or (mapa1[iAbaj][jIzq].tipo == 1 and mapa1[iArr][jDer].tipo == 0 and mapa1[iArr][jIzq].tipo == 0)  then
@@ -642,7 +669,7 @@ function revisarColisionesAbajo(cuerpoRecibido)
     else 
       return false
     end
-  
+    
   else
     return true
   end

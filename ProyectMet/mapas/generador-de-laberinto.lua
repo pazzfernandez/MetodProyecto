@@ -363,7 +363,7 @@ function dibujarLaberinto(grilla,dimCasilla)
       end
       if grilla[i][j].visitada and grilla[i][j].tipo == 0  then
         love.graphics.draw(imgCamino, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0, dimCasilla, dimCasilla)
-
+        
         casillaCaminoX[cantidadCasillasCamino] = i
         casillaCaminoY[cantidadCasillasCamino] = j
         cantidadCasillasCamino = cantidadCasillasCamino + 1
