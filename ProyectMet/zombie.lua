@@ -14,21 +14,11 @@ function crearZombie()
     end
     zombie.muerto = false
 	
-	--Aleatoriamente los coloca en uno de los lados de la pantalla
-    local lado = math.random(1, 4)
-    if lado == 1 then
-        zombie.x = -30
-        zombie.y = math.random(0, tamCasillas * labY)
-    elseif lado == 2 then
-        zombie.x = tamCasillas * labX + 30
-        zombie.y = math.random(0, tamCasillas * labY)
-    elseif lado == 3 then
-        zombie.x = math.random(0, tamCasillas * labX)
-        zombie.y = -30
-    elseif lado == 4 then
-        zombie.x = math.random(0, tamCasillas * labX)
-        zombie.y = tamCasillas * labY + 30
-    end
+	posicionDeCasilla = math.random(0, cantidadCasillasCamino)
+
+    zombie.x = 650 + (360 * casillaCaminoX[posicionDeCasilla])
+    zombie.y = 400 + (360 * casillaCaminoY[posicionDeCasilla])
+    
 
     table.insert(zombies, zombie)
 end

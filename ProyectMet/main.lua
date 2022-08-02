@@ -99,7 +99,7 @@ function love.load()
 	--Otras variables necesarias
   estadoDelJuego = 1
   puntaje = 0
-  tiempoMax = 2
+  tiempoMax = 1
   temporizador = tiempoMax
   nivelActual = 1
   estadoPausa = false
@@ -350,7 +350,6 @@ function love.update(dt)
         temporizador = temporizador - dt
         if temporizador <= 0 then
             crearZombie()
-            tiempoMax = 0.95 * tiempoMax
             temporizador = tiempoMax
             
         end

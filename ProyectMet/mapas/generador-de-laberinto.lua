@@ -352,6 +352,10 @@ function hayCasillas() --funcion que revisa si hay casillas que aun no han sido 
 end
 
 function dibujarLaberinto(grilla,dimCasilla)
+  cantidadCasillasCamino = 0
+  casillaCaminoX = {}
+  casillaCaminoY = {}
+
   for i=1,grilla.altura do  
     for j=1,grilla.base do
       if grilla[i][j].tipo ~= 0 then 
@@ -359,6 +363,11 @@ function dibujarLaberinto(grilla,dimCasilla)
       end
       if grilla[i][j].visitada and grilla[i][j].tipo == 0  then
         love.graphics.draw(imgCamino, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0, dimCasilla, dimCasilla)
+
+        casillaCaminoX[cantidadCasillasCamino] = i
+        casillaCaminoY[cantidadCasillasCamino] = j
+        cantidadCasillasCamino = cantidadCasillasCamino + 1
+        
       end
     end
   end  
