@@ -3,6 +3,8 @@ Menu = require "menu"
 config = require "config"
 Pausa = require "pausa"
 require("objetivos")
+ConfigSonido = require "configSonido"
+corazon = require "corazon"
 
 
 function love.load()
@@ -55,6 +57,7 @@ function love.load()
   sprites.zombie = love.graphics.newImage('sprites/zombie.png')
   sprites.cursor = love.graphics.newImage('sprites/cursor.png')
   sprites.sombra = love.graphics.newImage('sprites/sombra.png')
+  sprites.corazon = love.graphics.newImage('sprites/corazon.png')
 	
 	--Obtener los atributos del jugador
   jugador = {}
@@ -75,6 +78,10 @@ function love.load()
   musicaReproduciendose = true 
   musicaOnOff = 'On'
     
+  --Contador para los corazones que aparecen en el mapa
+  contador = 10
+  adidorTiempo = 1
+
   if musicaReproduciendose == false then
     musicaOnOff = 'Off'
   end
@@ -93,7 +100,12 @@ function love.load()
   sonidoEfectoDisparo = love.audio.newSource("musica/firingEffect.wav", "static")
   sonidoGanar = love.audio.newSource("musica/shinyglittersoundeffect.wav", "static")
     
-  musicaJuego:setVolume(0.2)
+    musicaJuego:setVolume(0.2)
+	
+	--Cargar tables de zombies, de las balas y de corazones
+    zombies = {}
+    balas = {}
+    corazonest = {}
 	
 	--Cargar tablas de zombies, de las balas y de los objetivos
   zombies = {}    
@@ -103,25 +115,115 @@ function love.load()
 	--Otras variables necesarias
   estadoDelJuego = 1
   puntaje = 0
-  tiempoMax = 1
+  tiempoMax = 2
   temporizador = tiempoMax
   nivelActual = 1
   estadoPausa = false
+  estadoConfiguracionSonido = false
+  volumenMusica = 1
+  volumenEfectos = 1
 
-  enfriamientoDesplazamiento = 0
-  tiempoDesplazandoce = 0
-  seDesplaza = false
-  
-  pausa = Pausa.new()
-  pausa:añadirItem{
+    enfriamientoDesplazamiento = 0
+    tiempoDesplazandoce = 0
+    seDesplaza = false
+
+    pausa = Pausa.new()
+    pausa:añadirItem{
     nombre = 'Reanudar',
     accion = function()
       estadoPausa = false
     end
   }
-   
   --Boton para parar o reproducir la musica
   pausa:añadirItem{
+    nombre = 'Sonido',--Configuracion de sonido
+    accion = function()
+      estadoConfiguracionSonido = true
+    end
+  }
+  pausa:añadirItem{
+    nombre = 'Salir',
+    accion = function()
+      love.event.quit(0)
+    end
+  }
+  
+  configSonido = ConfigSonido.new()
+  configSonido:añadirItem{
+    nombre = '<musica:     >',
+    bajarVolumen = function()
+      if volumenMusica > .1 then
+        volumenMusica = volumenMusica - .2
+        musicaJuego:setVolume(volumenMusica)
+      end
+    end,
+    subirVolumen = function()
+      if volumenMusica < 1 then
+        volumenMusica = volumenMusica + .2
+        musicaJuego:setVolume(volumenMusica)
+      end
+    end
+  }
+  configSonido:añadirItem{
+    nombre = '<efectos:     >',
+    bajarVolumen = function()
+      if volumenEfectos > .1 then
+        volumenEfectos = volumenEfectos - .2
+        sonidoEfectoDisparo:setVolume(volumenEfectos)
+        sonidoPerder:setVolume(volumenEfectos)
+        love.audio.stop(sonidoEfectoDisparo)
+        love.audio.play(sonidoEfectoDisparo)
+      end
+    end,
+    subirVolumen = function()
+      if volumenEfectos < 1 then
+        volumenEfectos = volumenEfectos + .2
+        sonidoEfectoDisparo:setVolume(volumenEfectos)
+        sonidoPerder:setVolume(volumenEfectos)
+        love.audio.stop(sonidoEfectoDisparo)
+        love.audio.play( sonidoEfectoDisparo)     
+      end
+    end
+  }
+  configSonido:añadirItem{
+    nombre = 'volver',
+    accion = function()
+      estadoConfiguracionSonido = false
+    end
+  }
+
+
+  if estadoDelJuego == 1 then
+    menu = Menu.new()
+    menu:añadirItem{
+    nombre = 'Jugar',
+    accion = function()
+      estadoDelJuego = 2
+      tiempoMax = 2
+      temporizador = tiempoMax
+      puntaje = 0
+      
+      --Generar laberinto
+      generarLaberinto(mapa1)
+        
+      contarCaminos(mapa1)
+      
+      --Crear objetivos
+      objetivos = crearPuntos()
+      
+       --Variable de vidas del jugador
+      corazones = 3
+    end
+  }
+  menu:añadirItem{
+    nombre = 'Salir',
+    accion = function()
+      love.event.quit(0)
+    end
+  }
+
+  --Boton para parar o reproducir la musica
+  menu:añadirItem{
     nombre = 'Musica',--.. musicaOnOff,
     accion = function()
       if musicaReproduciendose == true then
@@ -131,53 +233,6 @@ function love.load()
       end
     end
   }
-  pausa:añadirItem{
-    nombre = 'Salir',
-    accion = function()
-      love.event.quit(0)
-    end
-  }
-    
-  if estadoDelJuego == 1 then
-    menu = Menu.new()
-    
-    menu:añadirItem{
-      nombre = 'Jugar',
-      accion = function()
-        estadoDelJuego = 2
-        tiempoMax = 2
-        temporizador = tiempoMax
-        puntaje = 0
-        
-        --Generar laberinto
-        generarLaberinto(mapa1)
-        
-        contarCaminos(mapa1)
-        
-        --Crear objetivos
-        objetivos = crearPuntos()
-        
-        --Variable de vidas del jugador
-        corazones = 3
-      end
-    }
-    menu:añadirItem{
-      nombre = 'Salir',
-      accion = function()
-        love.event.quit(0)
-      end
-    }
-    --Boton para parar o reproducir la musica
-    menu:añadirItem{
-      nombre = 'Musica',--.. musicaOnOff,
-      accion = function()
-      if musicaReproduciendose == true then
-        musicaReproduciendose = false
-      else
-        musicaReproduciendose = true
-      end
-    end
-    }
   end
 end
 
@@ -242,6 +297,24 @@ function love.update(dt)
         cuerpoJug.y=jugador.y-50
         
         -------------------
+        
+          --itera sobre la tabla de corazones del mapa
+          for e,p in ipairs(corazonest) do
+                
+          --Si el jugador toca uno de los corazones
+              if distanciaEntre(p.x, p.y, jugador.x, jugador.y) < 20 then
+                
+                --Si los corazones son mas de uno
+                if corazones < 3 then
+                  --Se añade uno
+                  corazones = corazones + 1
+                end 
+                   
+              --Elimina el corazon para que no se sigan aumentando vidas
+              p.agarrado = true
+            end
+        end
+
         --Activa la pausa
         if(love.keyboard.isDown("escape")) then
           estadoPausa = true
@@ -250,7 +323,7 @@ function love.update(dt)
         if musicaReproduciendose == false then
           love.audio.stop(musicaIntro)
         elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
-          --funciona bien xd
+          --funciona bien 
         end
       
        --Temporizador de enfriamiento para el desplazamiento 
@@ -266,19 +339,21 @@ function love.update(dt)
           enfriamientoDesplazamiento = enfriamientoDesplazamiento-dt
         end 
         -------
-        
-    elseif estadoDelJuego == 1 then
-      
-      if musicaReproduciendose == false then
-        love.audio.stop(musicaIntro)
-      elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
-        --funciona bien
+
+
+      elseif estadoDelJuego == 1 then
+        if musicaReproduciendose == false then
+          love.audio.stop(musicaIntro)
+          
+        elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
+          --funciona bien 
+        end
+        menu:actualizar(dt)
+        configSonido:actualizar(dt)
       end
-      
-      menu:actualizar(dt)
-      
-    end
     
+
+	
 	--itera sobre la tabla de zombies y el movimiento que deben hacer respecto a la posicion del jugador
     for i,z in ipairs(zombies) do
         z.x = z.x + (math.cos( zombieJugadorAngulo(z) ) * z.velocidad * dt)
@@ -304,23 +379,30 @@ function love.update(dt)
             
             --Dormir al programa por 1 seg mientras suena el efecto
             love.timer.sleep(1)
+            contador = 10
+            adidorTiempo = 1
             estadoDelJuego = 1
             
-              --Destruye todos los objetos zombie
-              for i,z in ipairs(zombies) do
+            
+            --Destruye todos los objetos zombie
+            for i,z in ipairs(zombies) do
                   zombies[i] = nil
-                  estadoDelJuego = 1
-          --Coloca al jugador de nuevo al centro
+
+            end
+            
+            for e, p in ipairs(corazonest) do
+              corazonest[e] = nil
+            end
+            --Coloca al jugador de nuevo al centro
                   jugador.x = love.graphics.getWidth()/2
                   jugador.y = love.graphics.getHeight()/2
-              end
-              
-              love.graphics.setBackgroundColor(0,0,0,50)
-              mapa1 = iniciarLaberinto(labY, labX)
-          end
+                  estadoDelJuego = 1
+                  love.graphics.setBackgroundColor(0,0,0,50)
+                  mapa1 = iniciarLaberinto(labY, labX)
         end
       
     end
+  end
 	
     --Itera sobre la tabla de objetivos para ver si los ha recolectado
     for i,obj in ipairs(objetivos) do
@@ -408,6 +490,14 @@ function love.update(dt)
           table.remove(zombies, i)
         end
     end
+    
+    --Remueve los corazones que han sido agarrados por el jugador
+    for i=#corazonest,1,-1 do
+        local c = corazonest[i]
+        if c.agarrado == true then
+            table.remove(corazonest, i)
+        end
+    end
 
 	--Remueve las balas que han colisionado con los enemigos
     for i=#balas,1,-1 do
@@ -416,13 +506,26 @@ function love.update(dt)
           table.remove(balas, i)
         end
     end
-	
+  
+    
 	--Crea enemigos nuevos cada tantos segundos
     if estadoDelJuego == 2 then
         temporizador = temporizador - dt
         if temporizador <= 0 then
             crearZombie()
+            contador = contador - 1
+            tiempoMax = 0.95 * tiempoMax
             temporizador = tiempoMax
+            
+            --Cada 10 enemigos, generar un corazon en un lado random del mapa
+            if contador == 0 then
+              crearCorazon()
+              adidorTiempo = adidorTiempo * 10
+              contador = 10 + adidorTiempo
+              
+
+            end
+            
         end
     end
     
@@ -469,10 +572,8 @@ function love.update(dt)
   --SI LA PAUSA ESTA ACTIVA
   else
     pausa:actualizar(dt)
+    configSonido:actualizar(dt)
 
-    if(love.keyboard.isDown("return")) then
-      estadoPausa = false
-    end
   end
 end
 
@@ -484,7 +585,7 @@ function love.draw()
     
     cam:attach()
     --Si el juego aun no comenzo
-      if estadoDelJuego == 1 then
+    if estadoDelJuego == 1 then
         love.graphics.draw(sprites.fondoMenu, 0, 0)
         love.graphics.setNewFont("04b_30/04b_30__.TTF", 70)
           menu:dibujar(anchoVentana/2 - 175, altoVentana/2 - 50)
@@ -499,62 +600,60 @@ function love.draw()
       
           --Musica para el menu principal
           love.audio.play(musicaIntro)
-          if not musicaIntro:isPlaying( ) then
+          if not musicaIntro:isPlaying() then
             love.audio.play(musicaIntro)
           end
-      elseif estadoDelJuego == 3 then
+    elseif estadoDelJuego == 3 then
         
         --Mensaje de ganador
         love.graphics.setNewFont("pixelmania/Pixelmania.TTF", 45)
         love.graphics.printf("¡Ganaste!", 0, love.graphics.getHeight()-(love.graphics.getHeight()/4)*3, love.graphics.getWidth(), "center")
         estadoDelJuego=1
         
-      elseif estadoDelJuego == 2 then
-        
-        
-        
+    elseif estadoDelJuego == 2 then
         --RGB (62,94,109)
         local rojo = 62/255
         local verde = 94/255
         local azul = 109/255
         local alfa = 50/100
         love.graphics.setBackgroundColor(rojo,verde,azul,alfa)
-        
+      
         --Dibuja el laberinto
         dibujarLaberinto(mapa1, tamCasillas)
-     
-        
+   
         --Dibujar los objetivos
         dibujarPuntos(objetivos)
-        
-    --Dibuja al jugador en la pantalla
-      love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
-      
-    --Dibuja a los zombies 
-      for i,z in ipairs(zombies) do
-          love.graphics.draw(sprites.zombie, z.x, z.y, zombieJugadorAngulo(z), nil, nil, sprites.zombie:getWidth()/2, sprites.zombie:getHeight()/2)
-      end
-    
-    --Dibuja las balas
-      for i,b in ipairs(balas) do
-          love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
-      end
-      
-      
-      
-      if musicaReproduciendose == true then
-        --Para la musica de la introduccion si esta sonando
-        if musicaIntro:isPlaying() then
-          love.audio.stop(musicaIntro)
+
+        --Dibuja los corazones
+        for e,p in ipairs(corazonest) do
+          love.graphics.draw(sprites.corazon, p.x, p.x, nil, 0.75, nil, sprites.corazon:getWidth()/2, sprites.corazon:getHeight()/2)
         end
+    
+       --Dibuja al jugador en la pantalla
+        love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
         
-        --Musica dentro del juego
-        love.audio.play(musicaJuego)
+        --Dibuja a los zombies 
+        for i,z in ipairs(zombies) do
+          love.graphics.draw(sprites.zombie, z.x, z.y, zombieJugadorAngulo(z), nil, nil, sprites.zombie:getWidth()/2, sprites.zombie:getHeight()/2)
+        end
+    
+        --Dibuja las balas
+        for i,b in ipairs(balas) do
+          love.graphics.draw(sprites.bala, b.x, b.y, nil, 0.5, nil, sprites.bala:getWidth()/2, sprites.bala:getHeight()/2)
+        end
+      
+        if musicaReproduciendose == true then
+          --Para la musica de la introduccion si esta sonando
+          if musicaIntro:isPlaying() then
+            love.audio.stop(musicaIntro)
+          end
+        
+          --Musica dentro del juego
+          love.audio.play(musicaJuego)
             if not musicaJuego:isPlaying( ) then
               love.audio.play(musicaJuego)
             end
-      end
-
+        end
     end
     cam:detach()
     
@@ -563,41 +662,68 @@ function love.draw()
       --Dibuja la sombra
       love.graphics.draw(sprites.sombra, -150, -50, 0, 1, 1)
 
-    --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
+      --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
       if corazones ~=0 then
         love.graphics.draw(dibujos[math.floor(corazones)], love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7, 15)
       end
       
-    --Dibuja el medidor de energia
+      --Dibuja el medidor de energia
       if enfriamientoDesplazamiento >= 0 then
         love.graphics.draw(dibujosEnergia[math.floor(enfriamientoDesplazamiento+1)],love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7 , 90)
       elseif enfriamientoDesplazamiento < 0 then
         love.graphics.draw(dibujosEnergia[math.floor(1)],love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7 , 90)
       end
 
-    --Dibuja el puntaje en pantalla
+      --Dibuja el puntaje en pantalla
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
       love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-love.graphics.getHeight()/6, love.graphics.getWidth()-500, "center")
       
       --Dibuja los objetivos en pantalla
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
       love.graphics.printf("objetivos: " .. jugador.puntos .. "/3", 0, love.graphics.getHeight()-love.graphics.getHeight()/6, love.graphics.getWidth()+500, "center")
+      
+      --Dibuja el cursor con el sprite
+      love.graphics.draw(sprites.cursor, cx-15, cy-15, 0, 0.07)
     end
     
      --Dibuja pantalla de pausa
-     if estadoPausa then         
-      love.graphics.draw(sprites.fondoPausa, -200, -250, 0, 4, 4) --Fondo
-      love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-(love.graphics.getHeight()/6)*4, love.graphics.getWidth()-(love.graphics.getWidth()/2)+550, "center", 0, 1, 1, -100, 0) --Titulo Pausa
-    
+     if estadoPausa then
+      love.graphics.draw(sprites.fondoPausa, 10, -10, 0, 0.88, 0.7) --Fondo
+
+      if estadoConfiguracionSonido == false then    
+        love.graphics.printf("PAUSA", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0) --Titulo Pausa
+        pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
+      end
+      if estadoConfiguracionSonido then
+        love.graphics.printf("configuracion de sonido", 0, love.graphics.getHeight()-530, love.graphics.getWidth()-200, "center", 0, 1, 1, -100, 0)
+        configSonido:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
+       
+        if volumenMusica == 1 then love.graphics.printf("*****", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.8 then love.graphics.printf("**** ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.6 then love.graphics.printf("***  ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.4 then love.graphics.printf("**   ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+        if volumenMusica >= 0.2 then love.graphics.printf("*    ", 0, love.graphics.getHeight()-340, love.graphics.getWidth(), "left", 0, 1, 1, -427, 0) end
+
+        if volumenEfectos == 1 then love.graphics.printf("*****", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.8 then love.graphics.printf("**** ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.6 then love.graphics.printf("***  ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.4 then love.graphics.printf("**   ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+        if volumenEfectos >= 0.2 then love.graphics.printf("*    ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
+      end 
+
+      love.graphics.draw(dibujos[math.floor(corazones)], 725, 485, 0, -.6, .6) --Dibuja corazones en menu
+      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-70, love.graphics.getWidth()+670, "right", 0, .5, .5) --Puntaje en menu
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
-      pausa:dibujar(love.graphics.getWidth()/2 - 175, love.graphics.getHeight()/2 - 50)
+      
+      --Dibuja el cursor con el sprite
+      love.graphics.draw(sprites.cursor, cx-15, cy-15, 0, 0.07)
+
     end
 
   --Dibuja el cursor con el sprite
   love.graphics.draw(sprites.cursor, cx-15, cy-15, 0, 0.07)
 
   
-    
 end
 
 --Funcion para crear zombies una vez se comience el juego apretando el espacio
@@ -621,7 +747,11 @@ function love.keypressed(key)
     
     menu:keypressed(key)
   else if estadoDelJuego == 2 and estadoPausa == true then
+    if estadoConfiguracionSonido then
+      configSonido:keypressed(key)
+    else
     pausa:keypressed(key)
+    end
   end
 end
 end
