@@ -711,7 +711,7 @@ function love.draw()
         if volumenEfectos >= 0.2 then love.graphics.printf("*    ", 0, love.graphics.getHeight()-240, love.graphics.getWidth(), "left", 0, 1, 1, -450, 0) end
       end 
 
-      love.graphics.draw(dibujos[math.floor(corazones)], 725, 485, 0, -.6, .6) --Dibuja corazones en menu
+      --love.graphics.draw(dibujos[math.floor(corazones)], 725, 485, 0, -.6, .6) --Dibuja corazones en menu
       --love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-70, love.graphics.getWidth()+670, "right", 0, .5, .5) --Puntaje en menu
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 50)
       
