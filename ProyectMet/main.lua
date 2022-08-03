@@ -447,16 +447,23 @@ function love.draw()
           end
       
       elseif estadoDelJuego == 2 then
-        love.graphics.draw(sprites.fondoJuego,0,0,0,1366,768)
+        --love.graphics.draw(sprites.fondoJuego,0,0,0,1366,768)
+        --RGB (255,245,156)
+        local rojo = 255/255
+        local verde = 245/255
+        local azul = 156/255
+        local alfa = 50/100
+        love.graphics.setBackgroundColor(rojo,verde,azul,alfa)
+        
         --Dibuja el laberinto
         dibujarLaberinto(mapa1, tamCasillas)
         
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
       
-      love.graphics.rectangle("line", cuerpoJug.x, cuerpoJug.y, cuerpoJug.ancho, cuerpoJug.alto)
-      love.graphics.circle("fill",(1.3*tamCasillas),(0.6*tamCasillas),1)
-      love.graphics.circle("fill",(2.3*tamCasillas),(0.6*tamCasillas),1)
+      --love.graphics.rectangle("line", cuerpoJug.x, cuerpoJug.y, cuerpoJug.ancho, cuerpoJug.alto)
+      --love.graphics.circle("fill",(1.3*tamCasillas),(0.6*tamCasillas),1)
+      --love.graphics.circle("fill",(2.3*tamCasillas),(0.6*tamCasillas),1)
       
     --Dibuja a los zombies 
       for i,z in ipairs(zombies) do
