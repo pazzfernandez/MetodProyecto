@@ -237,10 +237,7 @@ function love.update(dt)
         if(love.keyboard.isDown("escape")) then
           estadoPausa = true
         end
-
         
-
-
         if musicaReproduciendose == false then
           love.audio.stop(musicaIntro)
         elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
@@ -260,27 +257,24 @@ function love.update(dt)
           enfriamientoDesplazamiento = enfriamientoDesplazamiento-dt
         end 
         -------
-
-
+        
     elseif estadoDelJuego == 1 then
+      
       if musicaReproduciendose == false then
         love.audio.stop(musicaIntro)
-        
       elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
         --funciona bien xd
       end
+      
       menu:actualizar(dt)
       
     end
 
-
-	
 	--itera sobre la tabla de zombies y el movimiento que deben hacer respecto a la posicion del jugador
     for i,z in ipairs(zombies) do
         z.x = z.x + (math.cos( zombieJugadorAngulo(z) ) * z.velocidad * dt)
         z.y = z.y + (math.sin( zombieJugadorAngulo(z) ) * z.velocidad * dt)
-		
-		
+        
 		--Reinicia el juego si un zombie toca al jugador
         if distanciaEntre(z.x, z.y, jugador.x, jugador.y) < 40 then
           
@@ -328,7 +322,7 @@ function love.update(dt)
 	--Remueve las balas que han salido de la pantalla
     for i=#balas, 1, -1 do
         local b = balas[i]
-        if (b.x < 0 or b.y < 0 or b.x > (tamCasillas * labX) or b.y > (tamCasillas * labY)) or (i>40) then
+        if b.x < 0 or b.y < 0 or b.x > ((tamCasillas * labX)+(1.3*tamCasillas)) or b.y > ((tamCasillas * labY)+(0.6*tamCasillas)) or (i>40) then
             table.remove(balas, i)
         end
     end
@@ -349,7 +343,7 @@ function love.update(dt)
     for i=#zombies,1,-1 do
         local z = zombies[i]
         if z.muerto == true then
-            table.remove(zombies, i)
+          table.remove(zombies, i)
         end
     end
 
@@ -357,7 +351,7 @@ function love.update(dt)
     for i=#balas,1,-1 do
         local b = balas[i]
         if b.muerto == true then
-            table.remove(balas, i)
+          table.remove(balas, i)
         end
     end
 	
@@ -367,7 +361,6 @@ function love.update(dt)
         if temporizador <= 0 then
             crearZombie()
             temporizador = tiempoMax
-            
         end
     end
     
@@ -390,8 +383,8 @@ function love.update(dt)
         --Para los bordes de abajo:
         --Cuanto tengamos un tile map funcionar habra que añadir:
         
-      --local mapaTileW = 101 * 160
-      --local mapaTileH = 101 * 160
+      --local mapaTileW = (tamCasillas * labX)+(1.3*tamCasillas)
+      --local mapaTileH = (tamCasillas * labY)+(0.6*tamCasillas)
         
         --Solo si estamos trabajando con tiles, si estamos trabajando
         --con un fondo normal, no se haria el calculo y solo se pondria 
@@ -399,10 +392,10 @@ function love.update(dt)
         
       --if cam.x < (mapaTileW - w/2) then
         --cam.x = mapaTileW - w/2
-      --end
+      --end 
       --if cam.y < (mapaTileH - h/2) then
---        cam.y = mapaTileH - h/2
-  --    end
+        --cam.y = mapaTileH - h/2
+      --end
         
         
     else
