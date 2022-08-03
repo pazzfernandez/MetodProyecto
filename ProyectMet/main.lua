@@ -55,6 +55,7 @@ function love.load()
   sprites.jugador = love.graphics.newImage('sprites/jugador_1.png')
   sprites.zombie = love.graphics.newImage('sprites/zombie.png')
   sprites.cursor = love.graphics.newImage('sprites/cursor.png')
+  sprites.sombra = love.graphics.newImage('sprites/sombra.png')
 	
 	--Obtener los atributos del jugador
   jugador = {}
@@ -511,6 +512,8 @@ function love.draw()
         
       elseif estadoDelJuego == 2 then
         
+        
+        
         --RGB (62,94,109)
         local rojo = 62/255
         local verde = 94/255
@@ -520,6 +523,7 @@ function love.draw()
         
         --Dibuja el laberinto
         dibujarLaberinto(mapa1, tamCasillas)
+     
         
         --Dibujar los objetivos
         dibujarPuntos(objetivos)
@@ -556,6 +560,10 @@ function love.draw()
     cam:detach()
     
     if estadoDelJuego == 2  then
+
+      --Dibuja la sombra
+      love.graphics.draw(sprites.sombra, -150, -50, 0, 1, 1)
+
     --Dibuja los corazones en la pantalla dependiendo de cuantos le queden al jugador
       if corazones ~=0 then
         love.graphics.draw(dibujos[math.floor(corazones)], love.graphics.getHeight()-(love.graphics.getHeight()/6)*5.7, 15)
@@ -584,6 +592,8 @@ function love.draw()
 
   --Dibuja el cursor con el sprite
   love.graphics.draw(sprites.cursor, cx-15, cy-15, 0, 0.07)
+
+  
     
 end
 
