@@ -19,8 +19,8 @@ function love.load()
   require("mapas/generador-de-laberinto")
   
   --Variables para determinar el tamaño del laberinto
-  labX = 29
-  labY = 29
+  labX = 21
+  labY = 21
   
   --Variable para asignar el tamaño de cada casilla del laberinto
   tamCasillas = 380
@@ -50,7 +50,6 @@ function love.load()
 
   sprites.fondoMenu = love.graphics.newImage('sprites/fondoMenu.png')
   sprites.fondoPausa = love.graphics.newImage('sprites/fondoPausa.png')
-  sprites.fondoJuego = love.graphics.newImage('sprites/fondo2.jpg')
   sprites.bala = love.graphics.newImage('sprites/bala.png')
   sprites.jugador = love.graphics.newImage('sprites/jugador_1.png')
   sprites.zombie = love.graphics.newImage('sprites/zombie.png')
@@ -578,9 +577,13 @@ function love.draw()
 
     --Dibuja el puntaje en pantalla
       love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
-      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-love.graphics.getHeight()/6, love.graphics.getWidth(), "center")
+      love.graphics.printf("puntaje: " .. puntaje, 0, love.graphics.getHeight()-love.graphics.getHeight()/6, love.graphics.getWidth()-500, "center")
+      
+      --Dibuja los objetivos en pantalla
+      love.graphics.setNewFont("04b_30/04b_30__.TTF", 35)
+      love.graphics.printf("objetivos: " .. jugador.puntos .. "/3", 0, love.graphics.getHeight()-love.graphics.getHeight()/6, love.graphics.getWidth()+500, "center")
     end
-
+    
      --Dibuja pantalla de pausa
      if estadoPausa then         
       love.graphics.draw(sprites.fondoPausa, -200, -250, 0, 4, 4) --Fondo
