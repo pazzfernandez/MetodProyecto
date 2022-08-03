@@ -14,10 +14,10 @@ function crearZombie()
     end
     zombie.muerto = false
     
-    posicionDeCasilla = math.random(0, cantidadCasillasCamino-1)
+    posicionDeCasilla = math.random(1, cantidadCasillasCamino)
     
-    zombie.x = 650 + (380 * casillaCaminoX[posicionDeCasilla])
-    zombie.y = 400 + (380 * casillaCaminoY[posicionDeCasilla])
+    zombie.x = ( casillaCaminoJ[cantidadCasillasCamino] + 0.3 ) * 380 + 350
+    zombie.y = ( casillaCaminoI[cantidadCasillasCamino] - 0.4 ) * 380 + 350
     
 
     table.insert(zombies, zombie)

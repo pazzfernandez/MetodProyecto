@@ -2,6 +2,7 @@ zombie = require "zombie"
 Menu = require "menu"
 config = require "config"
 Pausa = require "pausa"
+require("objetivos")
 
 
 function love.load()
@@ -18,8 +19,8 @@ function love.load()
   require("mapas/generador-de-laberinto")
   
   --Variables para determinar el tamaño del laberinto
-  labX = 5
-  labY = 5
+  labX = 29
+  labY = 29
   
   --Variable para asignar el tamaño de cada casilla del laberinto
   tamCasillas = 380
@@ -62,16 +63,17 @@ function love.load()
   jugador.xF = (love.graphics.getWidth() / 2)  
   jugador.yF = love.graphics.getHeight() / 2
   jugador.velocidad = 180
+  jugador.puntos = 0
   
+  --Campo para detectar las colisiones del jugador
   cuerpoJug = {}
   cuerpoJug.x = (love.graphics.getWidth() / 2)-50
   cuerpoJug.y = (love.graphics.getHeight() / 2)-50
   cuerpoJug.alto = 100
   cuerpoJug.ancho = 100
   
-  --ACAAAAAAAAAAAAAAAAAAAaaa ACTIVAR MUSICA
-  musicaReproduciendose = false 
-  musicaOnOff = 'Off'
+  musicaReproduciendose = true 
+  musicaOnOff = 'On'
     
   if musicaReproduciendose == false then
     musicaOnOff = 'Off'
@@ -89,12 +91,14 @@ function love.load()
   musicaJuego = love.audio.newSource("musica/Rolemusic - Pokimonkey.mp3", "stream")
   sonidoPerder = love.audio.newSource("musica/gameOverEffect.wav", "static")
   sonidoEfectoDisparo = love.audio.newSource("musica/firingEffect.wav", "static")
+  sonidoGanar = love.audio.newSource("musica/shinyglittersoundeffect.wav", "static")
     
   musicaJuego:setVolume(0.2)
 	
-	--Cargar tablas de zombies y de las balas
+	--Cargar tablas de zombies, de las balas y de los objetivos
   zombies = {}    
   balas = {}
+  objetivos = {}
 
 	--Otras variables necesarias
   estadoDelJuego = 1
@@ -147,6 +151,11 @@ function love.load()
         
         --Generar laberinto
         generarLaberinto(mapa1)
+        
+        contarCaminos(mapa1)
+        
+        --Crear objetivos
+        objetivos = crearPuntos()
         
         --Variable de vidas del jugador
         corazones = 3
@@ -263,13 +272,13 @@ function love.update(dt)
       if musicaReproduciendose == false then
         love.audio.stop(musicaIntro)
       elseif not musicaIntro:isPlaying() and musicaReproduciendose == true then
-        --funciona bien xd
+        --funciona bien
       end
       
       menu:actualizar(dt)
       
     end
-
+    
 	--itera sobre la tabla de zombies y el movimiento que deben hacer respecto a la posicion del jugador
     for i,z in ipairs(zombies) do
         z.x = z.x + (math.cos( zombieJugadorAngulo(z) ) * z.velocidad * dt)
@@ -307,10 +316,55 @@ function love.update(dt)
               end
               
               love.graphics.setBackgroundColor(0,0,0,50)
+              mapa1 = iniciarLaberinto(labY, labX)
           end
         end
+      
     end
 	
+    --Itera sobre la tabla de objetivos para ver si los ha recolectado
+    for i,obj in ipairs(objetivos) do
+      --Si se acerca a un objetivo...
+      if distanciaEntre(obj.x, obj.y, jugador.x, jugador.y) < 25 then
+        --Añade el objetivo a los puntos del jugador
+        if obj.muerto==false then
+          jugador.puntos = jugador.puntos + 1
+          obj.muerto = true
+        end
+        --Si junto los tres objetivos...
+        if jugador.puntos==3 then --gana el juego
+          --parar la musica
+          if musicaJuego:isPlaying() then
+            love.audio.stop(musicaJuego)
+          end
+          --Poner sonido de ganar
+          love.audio.play(sonidoGanar)
+          
+          --Dormir al programa por 1 seg mientras suena el efecto
+          love.timer.sleep(2)
+          estadoDelJuego = 1
+          
+          --Destruye todos los objetos zombie
+          for i,z in ipairs(zombies) do
+            zombies[i] = nil
+          end
+          
+          --Coloca al jugador de nuevo al centro
+          jugador.x = love.graphics.getWidth()/2
+          jugador.y = love.graphics.getHeight()/2
+          
+          --Destruye los objetos objetivos 
+          for i,o in ipairs(objetivos) do
+            objetivos[i]=nil
+          end
+          
+          love.graphics.setBackgroundColor(0,0,0,50)
+          mapa1 = iniciarLaberinto(labY, labX)
+        end
+      end
+      
+    end
+  
   --Obtiene la posicion del mouse para el cambio de sprite del mismo
   cx, cy = love.mouse.getPosition()
 
@@ -328,8 +382,14 @@ function love.update(dt)
             table.remove(balas, i)
         end
     end
-	
-	
+    
+    --Itera sobre los objetivos para borrar aquellos recogidos
+    for i,obj in ipairs(objetivos) do
+      if obj.muerto==true then
+        table.remove(objetivos,i)
+      end
+    end
+    
 	--Itera sobre los zombies buscando si alguna bala ha colisionado con ellos
 	--Si es asi, los elimina de la tabla y aumenta el puntaje
     for i,z in ipairs(zombies) do
@@ -442,7 +502,13 @@ function love.draw()
           if not musicaIntro:isPlaying( ) then
             love.audio.play(musicaIntro)
           end
-      
+      elseif estadoDelJuego == 3 then
+        
+        --Mensaje de ganador
+        love.graphics.setNewFont("pixelmania/Pixelmania.TTF", 45)
+        love.graphics.printf("¡Ganaste!", 0, love.graphics.getHeight()-(love.graphics.getHeight()/4)*3, love.graphics.getWidth(), "center")
+        estadoDelJuego=1
+        
       elseif estadoDelJuego == 2 then
         
         --RGB (62,94,109)
@@ -455,12 +521,11 @@ function love.draw()
         --Dibuja el laberinto
         dibujarLaberinto(mapa1, tamCasillas)
         
+        --Dibujar los objetivos
+        dibujarPuntos(objetivos)
+        
     --Dibuja al jugador en la pantalla
       love.graphics.draw(sprites.jugador, jugador.x, jugador.y, jugadorAnguloMouse(), nil, nil, sprites.jugador:getWidth()/2, sprites.jugador:getHeight()/2)
-      
-      --love.graphics.rectangle("line", cuerpoJug.x, cuerpoJug.y, cuerpoJug.ancho, cuerpoJug.alto)
-      --love.graphics.circle("fill",(1.3*tamCasillas),(0.6*tamCasillas),1)
-      --love.graphics.circle("fill",(2.3*tamCasillas),(0.6*tamCasillas),1)
       
     --Dibuja a los zombies 
       for i,z in ipairs(zombies) do
