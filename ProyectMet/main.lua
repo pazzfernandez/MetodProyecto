@@ -305,6 +305,8 @@ function love.update(dt)
                   jugador.x = love.graphics.getWidth()/2
                   jugador.y = love.graphics.getHeight()/2
               end
+              
+              love.graphics.setBackgroundColor(0,0,0,50)
           end
         end
     end
@@ -383,19 +385,19 @@ function love.update(dt)
         --Para los bordes de abajo:
         --Cuanto tengamos un tile map funcionar habra que añadir:
         
-      --local mapaTileW = (tamCasillas * labX)+(1.3*tamCasillas)
-      --local mapaTileH = (tamCasillas * labY)+(0.6*tamCasillas)
+      local mapaTileW = tamCasillas * (labX+1.3)
+      local mapaTileH = tamCasillas * (labY+0.6)
         
         --Solo si estamos trabajando con tiles, si estamos trabajando
         --con un fondo normal, no se haria el calculo y solo se pondria 
         --el ancho/alto del fondo :D
         
-      --if cam.x < (mapaTileW - w/2) then
-        --cam.x = mapaTileW - w/2
-      --end 
-      --if cam.y < (mapaTileH - h/2) then
-        --cam.y = mapaTileH - h/2
-      --end
+      if cam.x > (mapaTileW - w/2) then
+        cam.x = mapaTileW - w/2
+      end 
+      if cam.y > (mapaTileH - h/2) then
+        cam.y = mapaTileH - h/2
+      end
         
         
     else
@@ -442,11 +444,11 @@ function love.draw()
           end
       
       elseif estadoDelJuego == 2 then
-        --love.graphics.draw(sprites.fondoJuego,0,0,0,1366,768)
-        --RGB (255,245,156)
-        local rojo = 255/255
-        local verde = 245/255
-        local azul = 156/255
+        
+        --RGB (62,94,109)
+        local rojo = 62/255
+        local verde = 94/255
+        local azul = 109/255
         local alfa = 50/100
         love.graphics.setBackgroundColor(rojo,verde,azul,alfa)
         

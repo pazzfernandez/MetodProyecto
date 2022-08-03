@@ -7,7 +7,7 @@
 --        llamar a la funcion dibujarLaberinto(grilla, 10) pasando como argumento la tabla devuelta en iniciarLaberinto y el tamaño en el que se dibujaran las casillas
 
 require("mapas/Casilla")  --requiere la clase Casilla contenida en el archivo Casilla.lua
-imgPared = love.graphics.newImage('sprites/fondo2.jpg')
+imgPared = love.graphics.newImage('sprites/pared.jpg')
   imgCamino = love.graphics.newImage('sprites/camino.png')
 
 function iniciarLaberinto(altura, base) --esta función inicializa la tabla grilla que será donde se 
@@ -359,10 +359,10 @@ function dibujarLaberinto(grilla,dimCasilla)
   for i=1,grilla.altura do  
     for j=1,grilla.base do
       if grilla[i][j].tipo ~= 0 then 
-        love.graphics.draw(imgPared, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0, dimCasilla, dimCasilla)
+        love.graphics.draw(imgPared, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0)
       end
       if grilla[i][j].visitada and grilla[i][j].tipo == 0  then
-        love.graphics.draw(imgCamino, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0, dimCasilla, dimCasilla)
+        love.graphics.draw(imgCamino, (j+0.3) * dimCasilla, (i-0.4) * dimCasilla, 0)
         
         casillaCaminoX[cantidadCasillasCamino] = i
         casillaCaminoY[cantidadCasillasCamino] = j
