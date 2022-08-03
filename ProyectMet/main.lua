@@ -17,9 +17,11 @@ function love.load()
   --Importar generador de laberinto
   require("mapas/generador-de-laberinto")
   
+  --Variables para determinar el tamaño del laberinto
   labX = 5
   labY = 5
   
+  --Variable para asignar el tamaño de cada casilla del laberinto
   tamCasillas = 380
   
   --Crea grilla para laberinto
